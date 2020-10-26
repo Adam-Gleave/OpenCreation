@@ -31,10 +31,6 @@ impl Readable for VersionControlInfo {
             vc_current_id: reader.read_u8()?,
         })
     }
-
-    fn data_size(&self) -> u32 {
-        std::mem::size_of::<VersionControlInfo>() as u32
-    }
 }
 
 #[derive(Debug)]
