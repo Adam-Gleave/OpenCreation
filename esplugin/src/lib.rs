@@ -36,6 +36,7 @@ mod tests {
 
     #[test]
     fn test_read_plugin_header() {
+        println!("{:#?}", *PLUGIN);
         assert_eq!(PLUGIN.header.flags, PluginFlags::MASTER_FILE | PluginFlags::LOCALIZED);
     }
 }

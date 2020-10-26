@@ -16,13 +16,13 @@ impl From<u32> for SubrecordType {
 
 #[derive(Debug)]
 pub struct SubrecordHeader {
-    pub size: u32,
+    pub size: u16,
 }
 
 impl Readable for SubrecordHeader {
     fn read(reader: &mut EspReader) -> io::Result<Self> {
         Ok(Self{
-            size: reader.read_u32()?,
+            size: reader.read_u16()?,
         })
     }
 }
