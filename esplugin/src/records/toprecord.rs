@@ -1,10 +1,10 @@
-use std::io;
-use bitflags::bitflags;
 use crate::file::read::{EspReader, Readable};
 use crate::records::header::{RecordHeader, VersionControlInfo};
 use crate::records::record::Record;
 use crate::subrecords::header::SubrecordType;
 use crate::subrecords::subrecord::Subrecord;
+use bitflags::bitflags;
+use std::io;
 
 bitflags! {
     #[derive(Default)]

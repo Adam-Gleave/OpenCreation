@@ -1,10 +1,10 @@
-use std::io;
-use num_derive::FromPrimitive;
 use crate::file::read::{EspReader, Readable};
+use num_derive::FromPrimitive;
+use std::io;
 
 #[derive(Debug, Eq, PartialEq, FromPrimitive)]
 pub enum RecordType {
-    FileHeader = 0x54455334,    // "TES4"
+    FileHeader = 0x54455334, // "TES4"
     Unknown,
 }
 
@@ -35,7 +35,8 @@ impl Readable for VersionControlInfo {
 
 #[derive(Debug)]
 pub struct RecordHeader<RecordFlags>
-    where RecordFlags: Readable
+where
+    RecordFlags: Readable,
 {
     pub size: u32,
     pub flags: RecordFlags,

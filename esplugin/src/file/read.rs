@@ -1,9 +1,9 @@
+use crate::records::header::RecordType;
+use crate::subrecords::header::SubrecordType;
+use byteorder::{BigEndian, LittleEndian, ReadBytesExt};
 use std::fs::File;
 use std::io;
 use std::io::BufReader;
-use byteorder::{BigEndian, LittleEndian, ReadBytesExt};
-use crate::records::header::RecordType;
-use crate::subrecords::header::SubrecordType;
 
 pub struct EspReader {
     buf_reader: BufReader<File>,
@@ -12,8 +12,8 @@ pub struct EspReader {
 
 impl EspReader {
     pub fn new(file: File) -> Self {
-        Self { 
-            buf_reader: BufReader::new(file), 
+        Self {
+            buf_reader: BufReader::new(file),
             record_to_read: 0,
         }
     }
@@ -32,7 +32,7 @@ impl EspReader {
         Ok(RecordType::from(code))
     }
 
-        pub fn read_subrecord_type(&mut self) -> io::Result<SubrecordType> {
+    pub fn read_subrecord_type(&mut self) -> io::Result<SubrecordType> {
         let code = self.buf_reader.read_u32::<BigEndian>()?;
         self.record_to_read -= std::mem::size_of::<u32>() as i64;
         Ok(SubrecordType::from(code))
@@ -59,6 +59,9 @@ impl EspReader {
     }
 }
 
-pub trait Readable where Self: Sized {
+pub trait Readable
+where
+    Self: Sized,
+{
     fn read(reader: &mut EspReader) -> io::Result<Self>;
 }

@@ -2,8 +2,8 @@ mod file;
 mod records;
 mod subrecords;
 
-use std::io;
 use std::fs::File;
+use std::io;
 use std::path::PathBuf;
 
 use self::file::read::{EspReader, Readable};
@@ -21,10 +21,10 @@ pub fn read_plugin(filepath: PathBuf) -> io::Result<TopRecord> {
 mod tests {
     #![allow(deprecated)]
 
-    use std::path::PathBuf;
-    use lazy_static::lazy_static;
-    use super::*;
     use super::records::toprecord::{PluginFlags, TopRecord};
+    use super::*;
+    use lazy_static::lazy_static;
+    use std::path::PathBuf;
 
     lazy_static! {
         static ref PLUGIN: TopRecord = {
@@ -37,6 +37,9 @@ mod tests {
     #[test]
     fn test_read_plugin_header() {
         println!("{:#?}", *PLUGIN);
-        assert_eq!(PLUGIN.header.flags, PluginFlags::MASTER_FILE | PluginFlags::LOCALIZED);
+        assert_eq!(
+            PLUGIN.header.flags,
+            PluginFlags::MASTER_FILE | PluginFlags::LOCALIZED
+        );
     }
 }
