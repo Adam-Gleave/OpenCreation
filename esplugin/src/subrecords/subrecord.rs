@@ -6,7 +6,7 @@ use std::io;
 #[derive(Debug)]
 pub struct Subrecord<D>
 where
-    D: Readable + Debug,
+    D: Readable,
 {
     pub header: SubrecordHeader,
     pub data: D,
@@ -14,7 +14,7 @@ where
 
 impl<D> Readable for Subrecord<D>
 where
-    D: Readable + Debug,
+    D: Readable,
 {
     fn read(reader: &mut EspReader) -> io::Result<Self> {
         Ok(Self {

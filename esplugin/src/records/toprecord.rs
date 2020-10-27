@@ -1,10 +1,17 @@
 use crate::file::read::{EspReader, Readable};
-use crate::records::header::{RecordHeader, VersionControlInfo};
+use crate::records::header::RecordHeader;
 use crate::records::record::Record;
 use crate::subrecords::header::SubrecordType;
 use crate::subrecords::subrecord::Subrecord;
 use bitflags::bitflags;
 use std::io;
+
+pub type TopRecordHeader = RecordHeader<PluginFlags>;
+pub type TopRecord = Record<TopRecordHeader, TopRecordData>;
+
+pub type HEDR = Subrecord<HEDRData>;
+pub type CNAM = Subrecord<CNAMData>;
+pub type SNAM = Subrecord<SNAMData>;
 
 bitflags! {
     #[derive(Default)]
@@ -18,21 +25,6 @@ bitflags! {
 impl Readable for PluginFlags {
     fn read(reader: &mut EspReader) -> io::Result<Self> {
         Ok(PluginFlags::from_bits(reader.read_u32()?).unwrap_or(Default::default()))
-    }
-}
-
-pub type TopRecordHeader = RecordHeader<PluginFlags>;
-
-impl Readable for TopRecordHeader {
-    fn read(reader: &mut EspReader) -> io::Result<Self> {
-        Ok(Self {
-            size: reader.read_u32()?,
-            flags: PluginFlags::read(reader)?,
-            id: reader.read_u32()?,
-            vc_info: VersionControlInfo::read(reader)?,
-            version: reader.read_u16()?,
-            unknown: reader.read_u16()?,
-        })
     }
 }
 
@@ -53,25 +45,52 @@ impl Readable for HEDRData {
     }
 }
 
-pub type HEDR = Subrecord<HEDRData>;
+#[derive(Debug)]
+pub struct CNAMData {
+    pub author: String,
+}
+
+impl Readable for CNAMData {
+    fn read(reader: &mut EspReader) -> io::Result<Self> {
+        Ok(Self {
+            author: reader.read_zstring()?,
+        })
+    }
+}
 
 #[derive(Debug)]
+pub struct SNAMData {
+    pub description: String,
+}
+
+#[derive(Debug, Default)]
 pub struct TopRecordData {
-    hedr: Option<HEDR>,
+    pub hedr: Option<HEDR>,
+    pub cnam: Option<CNAM>,
+    pub snam: Option<SNAM>,
+}
+
+impl Readable for SNAMData {
+    fn read(reader: &mut EspReader) -> io::Result<Self> {
+        Ok(Self {
+            description: reader.read_zstring()?,
+        })
+    }
 }
 
 impl Readable for TopRecordData {
     fn read(reader: &mut EspReader) -> io::Result<Self> {
-        let code = reader.read_subrecord_type()?;
+        let mut record: TopRecordData = Default::default();
 
-        let hedr = if code == SubrecordType::HEDR {
-            Some(HEDR::read(reader)?)
-        } else {
-            None
-        };
+        while reader.record_left() > 0 {
+            match reader.read_subrecord_type()? {
+                SubrecordType::HEDR => record.hedr = Some(HEDR::read(reader)?),
+                SubrecordType::CNAM => record.cnam = Some(CNAM::read(reader)?),
+                SubrecordType::SNAM => record.snam = Some(SNAM::read(reader)?),
+                _ => (),
+            }
+        }
 
-        Ok(Self { hedr })
+        Ok(record)
     }
 }
-
-pub type TopRecord = Record<TopRecordHeader, TopRecordData>;

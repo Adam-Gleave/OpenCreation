@@ -5,6 +5,8 @@ use std::io;
 #[derive(Debug, Eq, PartialEq, FromPrimitive)]
 pub enum SubrecordType {
     HEDR = 0x48454452,
+    CNAM = 0x434E414D,
+    SNAM = 0x534E414D,
     Unknown,
 }
 
@@ -21,8 +23,11 @@ pub struct SubrecordHeader {
 
 impl Readable for SubrecordHeader {
     fn read(reader: &mut EspReader) -> io::Result<Self> {
-        Ok(Self {
+        let header = Self {
             size: reader.read_u16()?,
-        })
+        };
+
+        reader.next_subrecord_data(header.size);
+        Ok(header)
     }
 }

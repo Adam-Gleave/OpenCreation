@@ -34,14 +34,33 @@ impl Readable for VersionControlInfo {
 }
 
 #[derive(Debug)]
-pub struct RecordHeader<RecordFlags>
+pub struct RecordHeader<F>
 where
-    RecordFlags: Readable,
+    F: Readable,
 {
     pub size: u32,
-    pub flags: RecordFlags,
+    pub flags: F,
     pub id: u32,
     pub vc_info: VersionControlInfo,
     pub version: u16,
     pub unknown: u16,
+}
+
+impl<F> Readable for RecordHeader<F>
+where
+    F: Readable,
+{
+    fn read(reader: &mut EspReader) -> io::Result<Self> {
+        let header = Self {
+            size: reader.read_u32()?,
+            flags: F::read(reader)?,
+            id: reader.read_u32()?,
+            vc_info: VersionControlInfo::read(reader)?,
+            version: reader.read_u16()?,
+            unknown: reader.read_u16()?,
+        };
+
+        reader.next_record_data(header.size);
+        Ok(header)
+    }
 }
