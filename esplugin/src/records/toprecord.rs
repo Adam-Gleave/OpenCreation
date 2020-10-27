@@ -1,5 +1,5 @@
-use crate::file::read::{EspReader, Readable};
-use crate::records::header::RecordHeader;
+use crate::file::read::{Coded, EspReader, Readable};
+use crate::records::header::{RecordHeader, RecordType};
 use crate::records::record::Record;
 use crate::subrecords::header::SubrecordType;
 use crate::subrecords::subrecord::Subrecord;
@@ -12,6 +12,65 @@ pub type TopRecord = Record<TopRecordHeader, TopRecordData>;
 pub type HEDR = Subrecord<HEDRData>;
 pub type CNAM = Subrecord<CNAMData>;
 pub type SNAM = Subrecord<SNAMData>;
+pub type MAST = Subrecord<MASTData>;
+pub type DATA = Subrecord<DATAData>;
+pub type ONAM = Subrecord<ONAMData>;
+pub type INTV = Subrecord<INTVData>;
+pub type INCC = Subrecord<INCCData>;
+
+impl Coded<RecordType> for TopRecord {
+    fn code() -> RecordType {
+        RecordType::FileHeader
+    }
+}
+
+impl Coded<SubrecordType> for HEDR {
+    fn code() -> SubrecordType {
+        SubrecordType::HEDR
+    }
+}
+
+impl Coded<SubrecordType> for CNAM {
+    fn code() -> SubrecordType {
+        SubrecordType::CNAM
+    }
+}
+
+impl Coded<SubrecordType> for SNAM {
+    fn code() -> SubrecordType {
+        SubrecordType::SNAM
+    }
+}
+
+impl Coded<SubrecordType> for MAST {
+    fn code() -> SubrecordType {
+        SubrecordType::MAST
+    }
+}
+
+impl Coded<SubrecordType> for DATA {
+    fn code() -> SubrecordType {
+        SubrecordType::DATA
+    }
+}
+
+impl Coded<SubrecordType> for ONAM {
+    fn code() -> SubrecordType {
+        SubrecordType::ONAM
+    }
+}
+
+impl Coded<SubrecordType> for INTV {
+    fn code() -> SubrecordType {
+        SubrecordType::INTV
+    }
+}
+
+impl Coded<SubrecordType> for INCC {
+    fn code() -> SubrecordType {
+        SubrecordType::INCC
+    }
+}
 
 bitflags! {
     #[derive(Default)]
@@ -63,19 +122,95 @@ pub struct SNAMData {
     pub description: String,
 }
 
-#[derive(Debug, Default)]
-pub struct TopRecordData {
-    pub hedr: Option<HEDR>,
-    pub cnam: Option<CNAM>,
-    pub snam: Option<SNAM>,
-}
-
 impl Readable for SNAMData {
     fn read(reader: &mut EspReader) -> io::Result<Self> {
         Ok(Self {
             description: reader.read_zstring()?,
         })
     }
+}
+
+#[derive(Debug)]
+pub struct MASTData {
+    pub master: String,
+}
+
+impl Readable for MASTData {
+    fn read(reader: &mut EspReader) -> io::Result<Self> {
+        Ok(Self {
+            master: reader.read_zstring()?,
+        })
+    }
+}
+
+#[derive(Debug)]
+pub struct DATAData {
+    pub file_size: u64,
+}
+
+impl Readable for DATAData {
+    fn read(reader: &mut EspReader) -> io::Result<Self> {
+        Ok(Self {
+            file_size: reader.read_u64()?,
+        })
+    }
+}
+
+#[derive(Debug)]
+pub struct ONAMData {
+    pub overrides: Vec<u32>,
+}
+
+impl Readable for ONAMData {
+    fn read(reader: &mut EspReader) -> io::Result<Self> {
+        Ok(Self {
+            overrides: {
+                let mut ids = vec![];
+                while reader.subrecord_left() > 0 {
+                    ids.push(reader.read_u32()?);
+                }
+                ids
+            }
+        })
+    }
+}
+
+#[derive(Debug)]
+pub struct INTVData {
+    pub internal_version: u32,
+}
+
+impl Readable for INTVData {
+    fn read(reader: &mut EspReader) -> io::Result<Self> {
+        Ok(Self {
+            internal_version: reader.read_u32()?,
+        })
+    }
+}
+
+#[derive(Debug)]
+pub struct INCCData {
+    pub unknown: u32,
+}
+
+impl Readable for INCCData {
+    fn read(reader: &mut EspReader) -> io::Result<Self> {
+        Ok(Self {
+            unknown: reader.read_u32()?,
+        })
+    }
+}
+
+#[derive(Debug, Default)]
+pub struct TopRecordData {
+    pub hedr: Option<HEDR>,
+    pub cnam: Option<CNAM>,
+    pub snam: Option<SNAM>,
+    pub mast: Option<MAST>,
+    pub data: Option<DATA>,
+    pub onam: Option<ONAM>,
+    pub intv: Option<INTV>,
+    pub incc: Option<INCC>,
 }
 
 impl Readable for TopRecordData {
@@ -87,10 +222,15 @@ impl Readable for TopRecordData {
                 SubrecordType::HEDR => record.hedr = Some(HEDR::read(reader)?),
                 SubrecordType::CNAM => record.cnam = Some(CNAM::read(reader)?),
                 SubrecordType::SNAM => record.snam = Some(SNAM::read(reader)?),
+                SubrecordType::MAST => record.mast = Some(MAST::read(reader)?),
+                SubrecordType::DATA => record.data = Some(DATA::read(reader)?),
+                SubrecordType::ONAM => record.onam = Some(ONAM::read(reader)?),
+                SubrecordType::INTV => record.intv = Some(INTV::read(reader)?),
+                SubrecordType::INCC => record.incc = Some(INCC::read(reader)?),
                 _ => (),
             }
         }
-
+        
         Ok(record)
     }
 }

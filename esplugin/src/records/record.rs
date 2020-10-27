@@ -5,8 +5,8 @@ use std::io;
 #[derive(Debug)]
 pub struct Record<H, D>
 where
-    D: Readable + Debug,
-    H: Readable + Debug,
+    D: Readable,
+    H: Readable,
 {
     pub header: H,
     pub data: D,
@@ -14,8 +14,8 @@ where
 
 impl<H, D> Readable for Record<H, D>
 where
-    D: Readable + Debug,
-    H: Readable + Debug,
+    D: Readable,
+    H: Readable,
 {
     fn read(reader: &mut EspReader) -> io::Result<Self> {
         Ok(Self {

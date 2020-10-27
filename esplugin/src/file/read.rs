@@ -51,6 +51,12 @@ impl EspReader {
         Ok(SubrecordType::from(code))
     }
 
+    pub fn read_u64(&mut self) -> io::Result<u64> {
+        let result = self.buf_reader.read_u64::<LittleEndian>()?;
+        self.progress(size_of::<u64>() as i64);
+        Ok(result)
+    }
+
     pub fn read_u32(&mut self) -> io::Result<u32> {
         let result = self.buf_reader.read_u32::<LittleEndian>()?;
         self.progress(size_of::<u32>() as i64);
@@ -110,4 +116,8 @@ where
     Self: Sized,
 {
     fn read(reader: &mut EspReader) -> io::Result<Self>;
+}
+
+pub trait Coded<T> {
+    fn code() -> T;
 }
