@@ -26,21 +26,39 @@ mod tests {
     use std::path::PathBuf;
 
     lazy_static! {
-        static ref PLUGIN: TopRecord = {
+        static ref SKYRIM_MASTER: TopRecord = {
             let filename = format!("{}{}", env!("CARGO_MANIFEST_DIR"), "/../data/Skyrim.esm");
+            let filepath = PathBuf::from(filename);
+            read_plugin(filepath).unwrap()
+        };
+
+        static ref DAWNGUARD_MASTER: TopRecord = {
+            let filename = format!("{}{}", env!("CARGO_MANIFEST_DIR"), "/../data/Dawnguard.esm");
             let filepath = PathBuf::from(filename);
             read_plugin(filepath).unwrap()
         };
     }
 
     #[test]
-    fn test_read_plugin_header() {
-        println!("{:#?}", *PLUGIN);
-        assert_eq!(PLUGIN.header.flags, PluginFlags::MASTER_FILE | PluginFlags::LOCALIZED);
-        assert_eq!(PLUGIN.data.hedr.as_ref().unwrap().data.version, 0.94);
+    fn test_read_skyrim_header() {
+        println!("{:#?}", *SKYRIM_MASTER);
+        assert_eq!(SKYRIM_MASTER.header.flags, PluginFlags::MASTER_FILE | PluginFlags::LOCALIZED);
+        assert_eq!(SKYRIM_MASTER.data.hedr.as_ref().unwrap().data.version, 0.94);
         assert_eq!(
-            PLUGIN.data.cnam.as_ref().unwrap().data.author.value,
+            SKYRIM_MASTER.data.cnam.as_ref().unwrap().data.author.value,
             "mcarofano".to_owned()
+        );
+    }
+
+    #[test]
+    fn test_read_dawnguard_header() {
+        println!("{:#?}", *DAWNGUARD_MASTER);
+        assert_eq!(DAWNGUARD_MASTER.header.flags, PluginFlags::MASTER_FILE | PluginFlags::LOCALIZED);
+        assert_eq!(DAWNGUARD_MASTER.data.hedr.as_ref().unwrap().data.version, 0.94);
+        assert_eq!(DAWNGUARD_MASTER.data.onam.as_ref().unwrap().data.overrides.len(), 772);
+        assert_eq!(
+            DAWNGUARD_MASTER.data.cnam.as_ref().unwrap().data.author.value,
+            "bnesmith".to_owned()
         );
     }
 }
