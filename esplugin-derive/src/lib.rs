@@ -2,8 +2,7 @@ use proc_macro2::TokenStream;
 use quote::quote;
 use syn::parse::{Parse, ParseStream};
 use syn::{
-    parenthesized, parse2, parse_macro_input, Attribute, Data, DeriveInput, Fields, Ident, LitBool,
-    Token, TypeParam,
+    parenthesized, parse2, parse_macro_input, Attribute, Data, DeriveInput, Fields, Ident, LitBool, Token, TypeParam,
 };
 
 #[proc_macro_derive(Readable, attributes(record_header, subrecord_header, size_var))]
@@ -63,13 +62,7 @@ fn generate_read_fn(data: &Data, progress_reader: ProgressReaderGenerated) -> To
                     let progress_reader_fn = &progress_reader.tokens;
 
                     if progress_reader.params.is_some()
-                        && name_str
-                            == &progress_reader
-                                .params
-                                .as_ref()
-                                .unwrap()
-                                .size_struct
-                                .to_string()
+                        && name_str == &progress_reader.params.as_ref().unwrap().size_struct.to_string()
                     {
                         quote! {
                             let #name = <#t>::read(reader)?;
@@ -107,9 +100,7 @@ fn generate_progress_reader(attributes: Vec<Attribute>) -> ProgressReaderGenerat
     let subrecord_header_attr = attributes
         .iter()
         .find(|a| a.path.segments.len() == 1 && a.path.segments[0].ident == "subrecord_header");
-    let size_var_attr = attributes
-        .iter()
-        .find(|a| a.path.segments[0].ident == "size_var");
+    let size_var_attr = attributes.iter().find(|a| a.path.segments[0].ident == "size_var");
 
     let mut token_stream = TokenStream::new();
 
@@ -117,12 +108,11 @@ fn generate_progress_reader(attributes: Vec<Attribute>) -> ProgressReaderGenerat
         panic!("Struct cannot be both a record header and a subrecord header");
     } else if record_header_attr.is_some() && size_var_attr.is_some() {
         let record_header_params: ReadableRecordParams =
-            parse2(record_header_attr.unwrap().tokens.clone())
-                .expect("Error parsing \"record_header\" attribute");
-        let size_var_params: ReadableSizeVarParams = parse2(size_var_attr.unwrap().tokens.clone())
-            .expect("Error parsing \"size_var\" attribute");
+            parse2(record_header_attr.unwrap().tokens.clone()).expect("Error parsing \"record_header\" attribute");
+        let size_var_params: ReadableSizeVarParams =
+            parse2(size_var_attr.unwrap().tokens.clone()).expect("Error parsing \"size_var\" attribute");
 
-        if record_header_params.record_header.value != true {
+        if !record_header_params.record_header.value {
             panic!("Expected boolean \"true\" on header type to enable EspReader progression");
         }
 
@@ -134,13 +124,12 @@ fn generate_progress_reader(attributes: Vec<Attribute>) -> ProgressReaderGenerat
         };
         Some(size_var_params)
     } else if subrecord_header_attr.is_some() && size_var_attr.is_some() {
-        let subrecord_header_params: ReadableSubrecordParams =
-            parse2(subrecord_header_attr.unwrap().tokens.clone())
-                .expect("Error parsing \"subrecord_header\" attribute");
-        let size_var_params: ReadableSizeVarParams = parse2(size_var_attr.unwrap().tokens.clone())
-            .expect("Error parsing \"size_var\" attribute");
+        let subrecord_header_params: ReadableSubrecordParams = parse2(subrecord_header_attr.unwrap().tokens.clone())
+            .expect("Error parsing \"subrecord_header\" attribute");
+        let size_var_params: ReadableSizeVarParams =
+            parse2(size_var_attr.unwrap().tokens.clone()).expect("Error parsing \"size_var\" attribute");
 
-        if subrecord_header_params.subrecord_header.value != true {
+        if !subrecord_header_params.subrecord_header.value {
             panic!("Expected boolean \"true\" on header type to enable EspReader progression");
         }
 
@@ -202,10 +191,7 @@ impl Parse for ReadableSizeVarParams {
         content.parse::<Token![,]>()?;
         let size_var = content.parse()?;
 
-        Ok(ReadableSizeVarParams {
-            size_struct,
-            size_var,
-        })
+        Ok(ReadableSizeVarParams { size_struct, size_var })
     }
 }
 

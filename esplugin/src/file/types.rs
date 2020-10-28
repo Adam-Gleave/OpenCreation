@@ -24,10 +24,7 @@ impl Readable for ZString {
                 value: cstring.to_str().unwrap().to_owned(),
             })
         } else {
-            Err(io::Error::new(
-                io::ErrorKind::InvalidData,
-                "Invalid ZString",
-            ))
+            Err(io::Error::new(io::ErrorKind::InvalidData, "Invalid ZString"))
         }
     }
 }

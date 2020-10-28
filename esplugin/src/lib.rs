@@ -36,10 +36,7 @@ mod tests {
     #[test]
     fn test_read_plugin_header() {
         println!("{:#?}", *PLUGIN);
-        assert_eq!(
-            PLUGIN.header.flags,
-            PluginFlags::MASTER_FILE | PluginFlags::LOCALIZED
-        );
+        assert_eq!(PLUGIN.header.flags, PluginFlags::MASTER_FILE | PluginFlags::LOCALIZED);
         assert_eq!(PLUGIN.data.hedr.as_ref().unwrap().data.version, 0.94);
         assert_eq!(
             PLUGIN.data.cnam.as_ref().unwrap().data.author.value,
