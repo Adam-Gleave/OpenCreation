@@ -2,7 +2,7 @@ use crate::file::read::{EspReader, Readable};
 use esplugin_derive::*;
 use num_derive::FromPrimitive;
 
-#[derive(Debug, Eq, PartialEq, FromPrimitive)]
+#[derive(Clone, Debug, Eq, PartialEq, FromPrimitive)]
 pub enum SubrecordType {
     HEDR = 0x48454452,
     CNAM = 0x434E414D,
@@ -13,7 +13,7 @@ pub enum SubrecordType {
     INTV = 0x494E5456,
     INCC = 0x494E4343,
     EDID = 0x45444944,
-    Unknown,
+    Unknown = 0x0,
 }
 
 impl From<u32> for SubrecordType {

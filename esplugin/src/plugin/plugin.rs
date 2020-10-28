@@ -20,8 +20,6 @@ impl Readable for Plugin {
             plugin.header = toprecord::TopRecord::read(reader)?;
         }
 
-        println!("Reading, {}", reader.record_left());
-
         let group_code = reader.read_record_type()?;
         if group_code != group::CODE.into() {
             return Err(io::Error::new(io::ErrorKind::InvalidData, "No top group found"));

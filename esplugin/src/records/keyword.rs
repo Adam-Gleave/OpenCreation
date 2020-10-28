@@ -33,10 +33,14 @@ impl Readable for KeywordData {
         println!("{:#?}", reader.record_left());
         
         while reader.record_left() > 0 {
-            match reader.read_subrecord_type()? {
+            let subrecord_type = reader.read_subrecord_type()?;
+            match subrecord_type {
                 SubrecordType::EDID => record.edid = Some(EDIDSubrecord::read(reader)?),
                 SubrecordType::CNAM => record.cnam = Some(CNAMSubrecord::read(reader)?),
-                _ => (),
+                _ => {
+                    let msg = format!("Unexpected record {:#?} found in KYWD", subrecord_type);
+                    return Err(io::Error::new(io::ErrorKind::InvalidData, msg));
+                },
             }
         }
 
