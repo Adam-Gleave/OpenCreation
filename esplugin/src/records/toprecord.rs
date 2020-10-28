@@ -18,6 +18,8 @@ pub type ONAMSubrecord = Subrecord<ONAMData>;
 pub type INTVSubrecord = Subrecord<INTVData>;
 pub type INCCSubrecord = Subrecord<INCCData>;
 
+pub const CODE: u32 = 0x54455334;   // "TES4"
+
 bitflags! {
     #[derive(Default)]
     pub struct PluginFlags: u32 {
@@ -90,8 +92,6 @@ pub struct TopRecordData {
 impl Readable for TopRecordData {
     fn read(reader: &mut EspReader) -> io::Result<Self> {
         let mut record: TopRecordData = Default::default();
-
-        println!("Record left: {}", reader.record_left());
 
         while reader.record_left() > 0 {
             match reader.read_subrecord_type()? {

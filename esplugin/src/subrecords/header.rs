@@ -12,6 +12,7 @@ pub enum SubrecordType {
     ONAM = 0x4F4E414D,
     INTV = 0x494E5456,
     INCC = 0x494E4343,
+    EDID = 0x45444944,
     Unknown,
 }
 

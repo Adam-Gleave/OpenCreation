@@ -1,10 +1,11 @@
 use crate::file::read::{EspReader, Readable};
+use crate::file::types::VersionControlInfo;
 use esplugin_derive::*;
 use num_derive::FromPrimitive;
 
 #[derive(Debug, Eq, PartialEq, FromPrimitive)]
 pub enum RecordType {
-    FileHeader = 0x54455334, // "TES4"
+    Keyword = 0x4B595744,     // "KYWD"
     Unknown,
 }
 
@@ -14,15 +15,7 @@ impl From<u32> for RecordType {
     }
 }
 
-#[derive(Debug, Readable)]
-pub struct VersionControlInfo {
-    pub vc_day: u8,
-    pub vc_month: u8,
-    pub vc_previous_id: u8,
-    pub vc_current_id: u8,
-}
-
-#[derive(Debug, Readable)]
+#[derive(Debug, Default, Readable)]
 pub struct RecordHeader<F>
 where
     F: Readable,

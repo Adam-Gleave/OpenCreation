@@ -1,9 +1,26 @@
 use crate::file::read::{EspReader, Readable};
 use byteorder::{LittleEndian, ReadBytesExt};
+use esplugin_derive::*;
 use std::ffi::CString;
 use std::io;
 use std::io::BufRead;
 use std::mem::size_of;
+
+#[derive(Debug, Readable)]
+pub struct RGB {
+    pub r: u8,
+    pub g: u8,
+    pub b: u8,
+    pub a: u8,
+}
+
+#[derive(Debug, Default, Readable)]
+pub struct VersionControlInfo {
+    pub vc_day: u8,
+    pub vc_month: u8,
+    pub vc_previous_id: u8,
+    pub vc_current_id: u8,
+}
 
 #[derive(Debug, Eq, PartialEq)]
 pub struct ZString {
