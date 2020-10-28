@@ -4,10 +4,12 @@ use esplugin_derive::*;
 use std::fmt::Debug;
 
 #[derive(Debug, Readable)]
-pub struct Subrecord<D>
+#[subrecord_header(true)]
+#[size_var(header, size)]
+pub struct Subrecord<Data>
 where
-    D: Readable,
+    Data: Readable,
 {
     pub header: SubrecordHeader,
-    pub data: D,
+    pub data: Data,
 }

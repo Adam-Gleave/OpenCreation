@@ -48,6 +48,22 @@ impl Readable for u32 {
     }
 }
 
+impl Readable for u16 {
+    fn read(reader: &mut EspReader) -> io::Result<Self> {
+        let result = reader.buf_reader.read_u16::<LittleEndian>()?;
+        reader.progress(size_of::<u16>() as i64);
+        Ok(result)
+    }
+}
+
+impl Readable for u8 {
+    fn read(reader: &mut EspReader) -> io::Result<Self> {
+        let result = reader.buf_reader.read_u8()?;
+        reader.progress(size_of::<u8>() as i64);
+        Ok(result)
+    }
+}
+
 impl Readable for i32 {
     fn read(reader: &mut EspReader) -> io::Result<Self> {
         let result = reader.buf_reader.read_i32::<LittleEndian>()?;

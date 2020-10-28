@@ -1,6 +1,6 @@
 use crate::file::read::{EspReader, Readable};
+use esplugin_derive::*;
 use num_derive::FromPrimitive;
-use std::io;
 
 #[derive(Debug, Eq, PartialEq, FromPrimitive)]
 pub enum SubrecordType {
@@ -21,18 +21,7 @@ impl From<u32> for SubrecordType {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Readable)]
 pub struct SubrecordHeader {
     pub size: u16,
-}
-
-impl Readable for SubrecordHeader {
-    fn read(reader: &mut EspReader) -> io::Result<Self> {
-        let header = Self {
-            size: reader.read_u16()?,
-        };
-
-        reader.next_subrecord_data(header.size);
-        Ok(header)
-    }
 }

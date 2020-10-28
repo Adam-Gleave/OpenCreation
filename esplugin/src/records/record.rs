@@ -1,13 +1,16 @@
 use crate::file::read::{EspReader, Readable};
+use crate::records::header::RecordHeader;
 use esplugin_derive::*;
 use std::fmt::Debug;
 
 #[derive(Debug, Readable)]
-pub struct Record<H, D>
+#[record_header(true)]
+#[size_var(header, size)]
+pub struct Record<HeaderFlags, Data>
 where
-    D: Readable,
-    H: Readable,
+    HeaderFlags: Readable,
+    Data: Readable,
 {
-    pub header: H,
-    pub data: D,
+    pub header: RecordHeader<HeaderFlags>,
+    pub data: Data,
 }
