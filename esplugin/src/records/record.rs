@@ -1,8 +1,8 @@
 use crate::file::read::{EspReader, Readable};
+use esplugin_derive::*;
 use std::fmt::Debug;
-use std::io;
 
-#[derive(Debug)]
+#[derive(Debug, Readable)]
 pub struct Record<H, D>
 where
     D: Readable,
@@ -10,17 +10,4 @@ where
 {
     pub header: H,
     pub data: D,
-}
-
-impl<H, D> Readable for Record<H, D>
-where
-    D: Readable,
-    H: Readable,
-{
-    fn read(reader: &mut EspReader) -> io::Result<Self> {
-        Ok(Self {
-            header: H::read(reader)?,
-            data: D::read(reader)?,
-        })
-    }
 }

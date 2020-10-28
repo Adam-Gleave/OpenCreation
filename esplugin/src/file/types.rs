@@ -21,7 +21,7 @@ impl Readable for ZString {
 
         if let Ok(cstring) = result {
             Ok(Self {
-                value: cstring.to_str().unwrap().to_owned()
+                value: cstring.to_str().unwrap().to_owned(),
             })
         } else {
             Err(io::Error::new(
@@ -66,7 +66,7 @@ impl Readable for f32 {
 
 impl<T> Readable for Vec<T>
 where
-    T: Readable
+    T: Readable,
 {
     fn read(reader: &mut EspReader) -> io::Result<Self> {
         let mut result = Vec::<T>::new();

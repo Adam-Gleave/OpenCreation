@@ -4,21 +4,21 @@ use crate::records::header::{RecordHeader, RecordType};
 use crate::records::record::Record;
 use crate::subrecords::header::SubrecordType;
 use crate::subrecords::subrecord::Subrecord;
-use esplugin_derive::*;
 use bitflags::bitflags;
+use esplugin_derive::*;
 use std::io;
 
 pub type TopRecordHeader = RecordHeader<PluginFlags>;
 pub type TopRecord = Record<TopRecordHeader, TopRecordData>;
 
-pub type HEDR = Subrecord<HEDRData>;
-pub type CNAM = Subrecord<CNAMData>;
-pub type SNAM = Subrecord<SNAMData>;
-pub type MAST = Subrecord<MASTData>;
-pub type DATA = Subrecord<DATAData>;
-pub type ONAM = Subrecord<ONAMData>;
-pub type INTV = Subrecord<INTVData>;
-pub type INCC = Subrecord<INCCData>;
+pub type HEDRSubrecord = Subrecord<HEDRData>;
+pub type CNAMSubrecord = Subrecord<CNAMData>;
+pub type SNAMSubrecord = Subrecord<SNAMData>;
+pub type MASTSubrecord = Subrecord<MASTData>;
+pub type DATASubrecord = Subrecord<DATAData>;
+pub type ONAMSubrecord = Subrecord<ONAMData>;
+pub type INTVSubrecord = Subrecord<INTVData>;
+pub type INCCSubrecord = Subrecord<INCCData>;
 
 impl Coded<RecordType> for TopRecord {
     fn code() -> RecordType {
@@ -26,49 +26,49 @@ impl Coded<RecordType> for TopRecord {
     }
 }
 
-impl Coded<SubrecordType> for HEDR {
+impl Coded<SubrecordType> for HEDRSubrecord {
     fn code() -> SubrecordType {
         SubrecordType::HEDR
     }
 }
 
-impl Coded<SubrecordType> for CNAM {
+impl Coded<SubrecordType> for CNAMSubrecord {
     fn code() -> SubrecordType {
         SubrecordType::CNAM
     }
 }
 
-impl Coded<SubrecordType> for SNAM {
+impl Coded<SubrecordType> for SNAMSubrecord {
     fn code() -> SubrecordType {
         SubrecordType::SNAM
     }
 }
 
-impl Coded<SubrecordType> for MAST {
+impl Coded<SubrecordType> for MASTSubrecord {
     fn code() -> SubrecordType {
         SubrecordType::MAST
     }
 }
 
-impl Coded<SubrecordType> for DATA {
+impl Coded<SubrecordType> for DATASubrecord {
     fn code() -> SubrecordType {
         SubrecordType::DATA
     }
 }
 
-impl Coded<SubrecordType> for ONAM {
+impl Coded<SubrecordType> for ONAMSubrecord {
     fn code() -> SubrecordType {
         SubrecordType::ONAM
     }
 }
 
-impl Coded<SubrecordType> for INTV {
+impl Coded<SubrecordType> for INTVSubrecord {
     fn code() -> SubrecordType {
         SubrecordType::INTV
     }
 }
 
-impl Coded<SubrecordType> for INCC {
+impl Coded<SubrecordType> for INCCSubrecord {
     fn code() -> SubrecordType {
         SubrecordType::INCC
     }
@@ -118,7 +118,7 @@ pub struct DATAData {
 
 #[derive(Debug, Readable)]
 pub struct ONAMData {
-    pub overrides: Vec::<u32>,
+    pub overrides: Vec<u32>,
 }
 
 #[derive(Debug, Readable)]
@@ -133,14 +133,14 @@ pub struct INCCData {
 
 #[derive(Debug, Default)]
 pub struct TopRecordData {
-    pub hedr: Option<HEDR>,
-    pub cnam: Option<CNAM>,
-    pub snam: Option<SNAM>,
-    pub mast: Option<MAST>,
-    pub data: Option<DATA>,
-    pub onam: Option<ONAM>,
-    pub intv: Option<INTV>,
-    pub incc: Option<INCC>,
+    pub hedr: Option<HEDRSubrecord>,
+    pub cnam: Option<CNAMSubrecord>,
+    pub snam: Option<SNAMSubrecord>,
+    pub mast: Option<MASTSubrecord>,
+    pub data: Option<DATASubrecord>,
+    pub onam: Option<ONAMSubrecord>,
+    pub intv: Option<INTVSubrecord>,
+    pub incc: Option<INCCSubrecord>,
 }
 
 impl Readable for TopRecordData {
@@ -149,14 +149,14 @@ impl Readable for TopRecordData {
 
         while reader.record_left() > 0 {
             match reader.read_subrecord_type()? {
-                SubrecordType::HEDR => record.hedr = Some(HEDR::read(reader)?),
-                SubrecordType::CNAM => record.cnam = Some(CNAM::read(reader)?),
-                SubrecordType::SNAM => record.snam = Some(SNAM::read(reader)?),
-                SubrecordType::MAST => record.mast = Some(MAST::read(reader)?),
-                SubrecordType::DATA => record.data = Some(DATA::read(reader)?),
-                SubrecordType::ONAM => record.onam = Some(ONAM::read(reader)?),
-                SubrecordType::INTV => record.intv = Some(INTV::read(reader)?),
-                SubrecordType::INCC => record.incc = Some(INCC::read(reader)?),
+                SubrecordType::HEDR => record.hedr = Some(HEDRSubrecord::read(reader)?),
+                SubrecordType::CNAM => record.cnam = Some(CNAMSubrecord::read(reader)?),
+                SubrecordType::SNAM => record.snam = Some(SNAMSubrecord::read(reader)?),
+                SubrecordType::MAST => record.mast = Some(MASTSubrecord::read(reader)?),
+                SubrecordType::DATA => record.data = Some(DATASubrecord::read(reader)?),
+                SubrecordType::ONAM => record.onam = Some(ONAMSubrecord::read(reader)?),
+                SubrecordType::INTV => record.intv = Some(INTVSubrecord::read(reader)?),
+                SubrecordType::INCC => record.incc = Some(INCCSubrecord::read(reader)?),
                 _ => (),
             }
         }
