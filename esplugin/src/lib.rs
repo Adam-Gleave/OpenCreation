@@ -2,12 +2,11 @@ mod file;
 mod records;
 mod subrecords;
 
+use crate::file::read::{EspReader, Readable};
+use crate::records::toprecord::TopRecord;
 use std::fs::File;
 use std::io;
 use std::path::PathBuf;
-
-use self::file::read::{EspReader, Readable};
-use self::records::toprecord::TopRecord;
 
 pub fn read_plugin(filepath: PathBuf) -> io::Result<TopRecord> {
     let file = File::open(filepath)?;
@@ -43,7 +42,7 @@ mod tests {
         );
         assert_eq!(PLUGIN.data.hedr.as_ref().unwrap().data.version, 0.94);
         assert_eq!(
-            PLUGIN.data.cnam.as_ref().unwrap().data.author,
+            PLUGIN.data.cnam.as_ref().unwrap().data.author.value,
             "mcarofano".to_owned()
         );
     }

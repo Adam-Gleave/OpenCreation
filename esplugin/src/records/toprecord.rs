@@ -1,8 +1,10 @@
 use crate::file::read::{Coded, EspReader, Readable};
+use crate::file::types::*;
 use crate::records::header::{RecordHeader, RecordType};
 use crate::records::record::Record;
 use crate::subrecords::header::SubrecordType;
 use crate::subrecords::subrecord::Subrecord;
+use esplugin_derive::*;
 use bitflags::bitflags;
 use std::io;
 
@@ -87,118 +89,46 @@ impl Readable for PluginFlags {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Readable)]
 pub struct HEDRData {
     pub version: f32,
     pub num_records: i32,
     pub next_id: u32,
 }
 
-impl Readable for HEDRData {
-    fn read(reader: &mut EspReader) -> io::Result<Self> {
-        Ok(Self {
-            version: reader.read_f32()?,
-            num_records: reader.read_i32()?,
-            next_id: reader.read_u32()?,
-        })
-    }
-}
-
-#[derive(Debug)]
+#[derive(Debug, Readable)]
 pub struct CNAMData {
-    pub author: String,
+    pub author: ZString,
 }
 
-impl Readable for CNAMData {
-    fn read(reader: &mut EspReader) -> io::Result<Self> {
-        Ok(Self {
-            author: reader.read_zstring()?,
-        })
-    }
-}
-
-#[derive(Debug)]
+#[derive(Debug, Readable)]
 pub struct SNAMData {
-    pub description: String,
+    pub description: ZString,
 }
 
-impl Readable for SNAMData {
-    fn read(reader: &mut EspReader) -> io::Result<Self> {
-        Ok(Self {
-            description: reader.read_zstring()?,
-        })
-    }
-}
-
-#[derive(Debug)]
+#[derive(Debug, Readable)]
 pub struct MASTData {
-    pub master: String,
+    pub master: ZString,
 }
 
-impl Readable for MASTData {
-    fn read(reader: &mut EspReader) -> io::Result<Self> {
-        Ok(Self {
-            master: reader.read_zstring()?,
-        })
-    }
-}
-
-#[derive(Debug)]
+#[derive(Debug, Readable)]
 pub struct DATAData {
     pub file_size: u64,
 }
 
-impl Readable for DATAData {
-    fn read(reader: &mut EspReader) -> io::Result<Self> {
-        Ok(Self {
-            file_size: reader.read_u64()?,
-        })
-    }
-}
-
-#[derive(Debug)]
+#[derive(Debug, Readable)]
 pub struct ONAMData {
-    pub overrides: Vec<u32>,
+    pub overrides: Vec::<u32>,
 }
 
-impl Readable for ONAMData {
-    fn read(reader: &mut EspReader) -> io::Result<Self> {
-        Ok(Self {
-            overrides: {
-                let mut ids = vec![];
-                while reader.subrecord_left() > 0 {
-                    ids.push(reader.read_u32()?);
-                }
-                ids
-            }
-        })
-    }
-}
-
-#[derive(Debug)]
+#[derive(Debug, Readable)]
 pub struct INTVData {
     pub internal_version: u32,
 }
 
-impl Readable for INTVData {
-    fn read(reader: &mut EspReader) -> io::Result<Self> {
-        Ok(Self {
-            internal_version: reader.read_u32()?,
-        })
-    }
-}
-
-#[derive(Debug)]
+#[derive(Debug, Readable)]
 pub struct INCCData {
     pub unknown: u32,
-}
-
-impl Readable for INCCData {
-    fn read(reader: &mut EspReader) -> io::Result<Self> {
-        Ok(Self {
-            unknown: reader.read_u32()?,
-        })
-    }
 }
 
 #[derive(Debug, Default)]
@@ -230,7 +160,7 @@ impl Readable for TopRecordData {
                 _ => (),
             }
         }
-        
+
         Ok(record)
     }
 }

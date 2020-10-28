@@ -9,7 +9,7 @@ use std::io::BufReader;
 use std::mem::size_of;
 
 pub struct EspReader {
-    buf_reader: BufReader<File>,
+    pub buf_reader: BufReader<File>,
     record_to_read: i64,
     subrecord_to_read: i64,
 }
@@ -105,7 +105,7 @@ impl EspReader {
         }
     }
 
-    fn progress(&mut self, num_bytes: i64) {
+    pub fn progress(&mut self, num_bytes: i64) {
         self.record_to_read -= num_bytes;
         self.subrecord_to_read -= num_bytes;
     }
