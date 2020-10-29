@@ -1,4 +1,5 @@
 use crate::file::read::{EspReader, Readable};
+use crate::records::form::Form;
 use crate::records::header::RecordHeader;
 use bitflags::bitflags;
 use esplugin_derive::*;
@@ -29,7 +30,7 @@ impl Readable for RecordFlags {
     }
 }
 
-#[derive(Default, Debug, Readable)]
+#[derive(Default, Debug, Form, Readable)]
 #[record_header(true)]
 #[size_var(header, size)]
 pub struct Record<HeaderFlags, Data>

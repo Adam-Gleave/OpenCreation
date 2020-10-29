@@ -1,9 +1,34 @@
-use proc_macro2::TokenStream;
+use proc_macro2::{Ident, Span, TokenStream};
 use quote::quote;
 use syn::parse::{Parse, ParseStream};
 use syn::{
-    parenthesized, parse2, parse_macro_input, Attribute, Data, DeriveInput, Fields, Ident, LitBool, Token, TypeParam,
+    parenthesized, parse2, parse_macro_input, Attribute, Data, DeriveInput, Fields, LitBool, Token, TypeParam,
 };
+
+#[proc_macro_derive(Form)]
+pub fn derive_form(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
+    let input = parse_macro_input!(input as DeriveInput);
+
+    let name = &input.ident;
+    let generics = &input.generics;
+    let type_params = generics.type_params().collect::<Vec<&TypeParam>>();
+
+    let form_impl = if type_params.len() > 0 {
+        generate_impl(name, &Ident::new("Form", Span::call_site()), type_params)
+    } else {
+        quote! { impl Form for #name }
+    };
+
+    let expanded = quote! {
+        #form_impl {
+            fn form_id(&self) -> u32 {
+                self.header.id
+            }
+        }
+    };
+
+    proc_macro::TokenStream::from(expanded)
+}
 
 #[proc_macro_derive(Readable, attributes(record_header, subrecord_header, size_var))]
 pub fn derive_readable(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
@@ -16,7 +41,7 @@ pub fn derive_readable(input: proc_macro::TokenStream) -> proc_macro::TokenStrea
     let progress_reader = generate_progress_reader(input.attrs);
 
     let read_fn_impl = if type_params.len() > 0 {
-        generate_impl(name, type_params)
+        generate_impl(name, &Ident::new("Readable", Span::call_site()), type_params)
     } else {
         quote! { impl Readable for #name }
     };
@@ -34,7 +59,7 @@ pub fn derive_readable(input: proc_macro::TokenStream) -> proc_macro::TokenStrea
     proc_macro::TokenStream::from(expanded)
 }
 
-fn generate_impl(name: &Ident, type_params: Vec<&TypeParam>) -> TokenStream {
+fn generate_impl(name: &Ident, trait_name: &Ident, type_params: Vec<&TypeParam>) -> TokenStream {
     let recurse = type_params.iter().map(|g| {
         quote! { #g }
     });
@@ -45,7 +70,7 @@ fn generate_impl(name: &Ident, type_params: Vec<&TypeParam>) -> TokenStream {
     let where_literal = quote! { #(#where_recurse: Readable,)* };
 
     quote! {
-        impl#types_literal Readable for #name#types_literal
+        impl#types_literal #trait_name for #name#types_literal
         where
             #where_literal
     }
