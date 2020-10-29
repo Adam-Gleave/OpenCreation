@@ -3,7 +3,25 @@ use crate::records::form::Form;
 use crate::records::header::RecordHeader;
 use bitflags::bitflags;
 use esplugin_derive::*;
+use num_derive::FromPrimitive;
 use std::io;
+
+#[derive(Debug, Eq, PartialEq, FromPrimitive)]
+pub enum RecordType {
+    Keyword     = 0x4B595744,       // "KYWD"
+    GameSetting = 0x474D5354,       // "GMST"
+    Unknown,
+}
+
+impl From<u32> for RecordType {
+    fn from(num: u32) -> Self {
+        num::FromPrimitive::from_u32(num).unwrap_or(Self::Unknown)
+    }
+}
+
+pub trait Coded {
+    fn code() -> RecordType;
+}
 
 bitflags! {
     #[derive(Default)]

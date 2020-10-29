@@ -3,8 +3,41 @@ use byteorder::{LittleEndian, ReadBytesExt};
 use esplugin_derive::*;
 use std::ffi::CString;
 use std::io;
-use std::io::BufRead;
+use std::io::{BufRead, Read};
 use std::mem::size_of;
+
+#[derive(Debug)]
+pub struct VariantBytes {
+    bytes: [u8; 4],
+}
+
+impl Readable for VariantBytes {
+    fn read(reader: &mut EspReader) -> io::Result<Self> {
+        let mut buf = [0u8; 4];
+        reader.buf_reader.read_exact(&mut buf)?;
+        reader.progress(4i64);
+        
+        Ok(Self { bytes: buf })
+    }
+}
+
+impl VariantBytes {
+    pub fn boolean(&self) -> bool {
+        u32::from_be_bytes(self.bytes.clone()) > 0
+    }
+
+    pub fn int(&self) -> u32 {
+        u32::from_be_bytes(self.bytes.clone())
+    }
+
+    pub fn float(&self) -> f32 {
+        f32::from_be_bytes(self.bytes.clone())
+    }
+
+    pub fn lstring(&self) -> u32 {
+        u32::from_be_bytes(self.bytes.clone())
+    }
+}
 
 #[derive(Debug, Readable)]
 pub struct RGB {

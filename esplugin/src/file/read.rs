@@ -1,5 +1,5 @@
-use crate::records::header::RecordType;
-use crate::subrecords::header::SubrecordType;
+use crate::records::record::RecordType;
+use crate::subrecords::subrecord::SubrecordType;
 use byteorder::{BigEndian, ReadBytesExt};
 use std::fs::File;
 use std::io;

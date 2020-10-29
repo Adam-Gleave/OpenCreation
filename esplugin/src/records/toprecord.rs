@@ -1,8 +1,7 @@
 use crate::file::read::{EspReader, Readable};
 use crate::file::types::*;
 use crate::records::record::Record;
-use crate::subrecords::header::SubrecordType;
-use crate::subrecords::subrecord::Subrecord;
+use crate::subrecords::subrecord::{Subrecord, SubrecordType};
 use bitflags::bitflags;
 use esplugin_derive::*;
 use std::io;

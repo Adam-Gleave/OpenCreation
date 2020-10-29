@@ -42,7 +42,7 @@ mod tests {
 
     #[test]
     fn test_read_skyrim_header() {
-        //println!("{:#?}", *SKYRIM_MASTER);
+        println!("{:#?}", *SKYRIM_MASTER);
         assert_eq!(SKYRIM_MASTER.header.header.flags, PluginFlags::MASTER_FILE | PluginFlags::LOCALIZED);
         assert_eq!(SKYRIM_MASTER.header.data.hedr.as_ref().unwrap().data.version, 0.94);
         assert_eq!(
@@ -53,7 +53,7 @@ mod tests {
 
     #[test]
     fn test_read_dawnguard_header() {
-        //println!("{:#?}", *DAWNGUARD_MASTER);
+        println!("{:#?}", *DAWNGUARD_MASTER);
         assert_eq!(DAWNGUARD_MASTER.header.header.flags, PluginFlags::MASTER_FILE | PluginFlags::LOCALIZED);
         assert_eq!(DAWNGUARD_MASTER.header.data.hedr.as_ref().unwrap().data.version, 0.94);
         assert_eq!(DAWNGUARD_MASTER.header.data.onam.as_ref().unwrap().data.overrides.len(), 772);
