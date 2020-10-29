@@ -72,3 +72,10 @@ where
 {
     fn read(reader: &mut EspReader) -> io::Result<Self>;
 }
+
+pub trait Peekable
+where 
+    Self: Sized,
+{
+    fn peek(reader: &mut EspReader, offset: i64) -> io::Result<Self>;
+}

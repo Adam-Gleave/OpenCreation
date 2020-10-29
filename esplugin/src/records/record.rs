@@ -1,12 +1,14 @@
-use crate::file::read::{EspReader, Readable};
+use crate::file::read::{EspReader, Readable, Peekable};
 use crate::records::form::Form;
 use crate::records::header::RecordHeader;
 use bitflags::bitflags;
+use byteorder::{ReadBytesExt, BigEndian};
 use esplugin_derive::*;
 use num_derive::FromPrimitive;
+use std::io::{Seek, SeekFrom};
 use std::io;
 
-#[derive(Debug, Eq, PartialEq, FromPrimitive)]
+#[derive(Debug, Eq, PartialEq, FromPrimitive, Hash)]
 pub enum RecordType {
     Keyword     = 0x4B595744,       // "KYWD"
     GameSetting = 0x474D5354,       // "GMST"
@@ -16,6 +18,17 @@ pub enum RecordType {
 impl From<u32> for RecordType {
     fn from(num: u32) -> Self {
         num::FromPrimitive::from_u32(num).unwrap_or(Self::Unknown)
+    }
+}
+
+impl Peekable for RecordType {
+    fn peek(reader: &mut EspReader, offset: i64) -> io::Result<Self> {
+        reader.buf_reader.seek(SeekFrom::Current(offset))?;
+        let num = reader.buf_reader.read_u32::<BigEndian>()?;
+        let reverse = 0 - (offset + std::mem::size_of::<u32>() as i64);
+        reader.buf_reader.seek(SeekFrom::Current(reverse))?;
+
+        Ok(num.into())
     }
 }
 
