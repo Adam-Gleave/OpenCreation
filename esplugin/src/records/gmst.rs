@@ -1,6 +1,7 @@
 use crate::file::read::{EspReader, Readable};
 use crate::file::types::*;
 use crate::records::record::{Record, RecordFlags};
+use crate::subrecords::common::EDIDData;
 use crate::subrecords::subrecord::{Subrecord, SubrecordType};
 use esplugin_derive::*;
 use std::io;
@@ -9,11 +10,6 @@ pub type GMSTRecord = Record<RecordFlags, GMSTData>;
 
 pub type EDIDSubrecord = Subrecord<EDIDData>;
 pub type DATASubrecord = Subrecord<DATAData>;
-
-#[derive(Debug, Readable)]
-pub struct EDIDData {
-    pub editor_id: ZString,
-}
 
 #[derive(Debug, Readable)]
 pub struct DATAData {
