@@ -26,6 +26,8 @@ pub enum SubrecordType {
     TX07 = 0x54583037,
     DODT = 0x444f4454,
     DNAM = 0x444e414d,
+    FNAM = 0x464e414d,
+    FLTV = 0x464c5456,
     Unknown = 0,
 }
 

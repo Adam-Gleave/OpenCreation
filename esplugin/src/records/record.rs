@@ -15,6 +15,7 @@ pub enum RecordType {
     LCRT = 0x4c435254,
     AACT = 0x41414354,
     TXST = 0x54585354,
+    GLOB = 0x474c4f42,
     Unknown = 0,
 }
 

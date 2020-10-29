@@ -79,6 +79,13 @@ impl Readable for ZString {
     }
 }
 
+impl Readable for char {
+    fn read(reader: &mut EspReader) -> io::Result<Self> {
+        let byte = u8::read(reader)?;
+        Ok(byte.into())
+    }
+}
+
 impl Readable for u64 {
     fn read(reader: &mut EspReader) -> io::Result<Self> {
         let result = reader.buf_reader.read_u64::<LittleEndian>()?;
