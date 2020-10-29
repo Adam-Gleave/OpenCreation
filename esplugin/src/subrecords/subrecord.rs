@@ -4,7 +4,7 @@ use esplugin_derive::*;
 use num_derive::FromPrimitive;
 use std::fmt::Debug;
 
-#[derive(Clone, Debug, Eq, PartialEq, FromPrimitive)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, FromPrimitive)]
 pub enum SubrecordType {
     HEDR = 0x48454452,
     CNAM = 0x434E414D,
@@ -15,7 +15,23 @@ pub enum SubrecordType {
     INTV = 0x494E5456,
     INCC = 0x494E4343,
     EDID = 0x45444944,
-    Unknown = 0x0,
+    OBND = 0x4f424e44,
+    TX00 = 0x54583030,
+    TX01 = 0x54583031,
+    TX02 = 0x54583032,
+    TX03 = 0x54583033,
+    TX04 = 0x54583034,
+    TX05 = 0x54583035,
+    TX06 = 0x54583036,
+    TX07 = 0x54583037,
+    DODT = 0x444f4454,
+    DNAM = 0x444e414d,
+    Unknown = 0,
+}
+
+impl SubrecordType {
+    #[allow(unused)]
+    pub fn num(&self) -> u32 { *self as u32 }
 }
 
 impl From<u32> for SubrecordType {

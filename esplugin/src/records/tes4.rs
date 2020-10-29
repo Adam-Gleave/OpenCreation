@@ -23,7 +23,7 @@ bitflags! {
     #[derive(Default)]
     pub struct PluginFlags: u32 {
         const MASTER_FILE  = 0x00000001;
-        const LOCALIZED   = 0x00000080;
+        const LOCALIZED    = 0x00000080;
         const LIGHT_MASTER = 0x00000200;
     }
 }

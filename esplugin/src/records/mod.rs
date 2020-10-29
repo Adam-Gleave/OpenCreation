@@ -6,3 +6,4 @@ pub mod kywd;
 pub mod lcrt;
 pub mod record;
 pub mod tes4;
+pub mod txst;

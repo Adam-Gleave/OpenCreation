@@ -8,13 +8,19 @@ use num_derive::FromPrimitive;
 use std::io::{Seek, SeekFrom};
 use std::io;
 
-#[derive(Debug, Eq, PartialEq, FromPrimitive, Hash)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, FromPrimitive, Hash)]
 pub enum RecordType {
     KYWD = 0x4b595744,
     GMST = 0x474d5354,
     LCRT = 0x4c435254,
     AACT = 0x41414354,
-    Unknown,
+    TXST = 0x54585354,
+    Unknown = 0,
+}
+
+#[allow(unused)]
+impl RecordType {
+    pub fn num(&self) -> u32 { *self as u32 }
 }
 
 impl From<u32> for RecordType {

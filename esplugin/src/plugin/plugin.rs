@@ -6,6 +6,7 @@ use crate::records::{
     gmst::GMSTRecord, 
     kywd::KYWDRecord,
     lcrt::LCRTRecord,
+    txst::TXSTRecord,
 };
 use crate::groups::group::Group;
 use crate::groups::group;
@@ -18,6 +19,7 @@ pub enum GroupVariant {
     KYWD(Group<KYWDRecord>),
     AACT(Group<AACTRecord>),
     LCRT(Group<LCRTRecord>),
+    TXST(Group<TXSTRecord>),
     Unknown,
 }
 
@@ -49,7 +51,7 @@ impl Readable for Plugin {
             plugin.header = tes4::TES4::read(reader)?;
         }
 
-        for _ in 0..4 {            
+        for _ in 0..5 {            
             if reader.read_record_type()? != group::CODE.into() {
                 return Err(io::Error::new(
                     io::ErrorKind::InvalidData, 
@@ -63,6 +65,7 @@ impl Readable for Plugin {
                     RecordType::KYWD => { GroupVariant::KYWD(Group::<KYWDRecord>::read(reader)?) },
                     RecordType::AACT => { GroupVariant::AACT(Group::<AACTRecord>::read(reader)?) },
                     RecordType::LCRT => { GroupVariant::LCRT(Group::<LCRTRecord>::read(reader)?) },
+                    RecordType::TXST => { GroupVariant::TXST(Group::<TXSTRecord>::read(reader)?) },
                     _ => { 
                         return Err(io::Error::new(
                             io::ErrorKind::InvalidData, 
