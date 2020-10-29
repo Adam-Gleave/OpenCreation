@@ -21,7 +21,7 @@ pub fn read_plugin(filepath: PathBuf) -> io::Result<Plugin> {
 mod tests {
     #![allow(deprecated)]
 
-    use super::records::toprecord::PluginFlags;
+    use super::records::tes4::PluginFlags;
     use super::*;
     use lazy_static::lazy_static;
     use std::path::PathBuf;

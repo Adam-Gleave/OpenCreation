@@ -1,20 +1,14 @@
 use crate::file::read::{EspReader, Readable};
 use crate::file::types::*;
-use crate::records::record::{Record, RecordFlags, RecordType, Coded};
+use crate::records::record::{Record, RecordFlags};
 use crate::subrecords::subrecord::{Subrecord, SubrecordType};
 use esplugin_derive::*;
 use std::io;
 
-pub type GameSettingRecord = Record<RecordFlags, GameSettingData>;
-
-impl Coded for GameSettingRecord {
-    fn code() -> RecordType {
-        RecordType::GameSetting
-    }
-}
+pub type LCRTRecord = Record<RecordFlags, LCRTData>;
 
 pub type EDIDSubrecord = Subrecord<EDIDData>;
-pub type DATASubrecord = Subrecord<DATAData>;
+pub type CNAMSubrecord = Subrecord<CNAMData>;
 
 #[derive(Debug, Readable)]
 pub struct EDIDData {
@@ -22,33 +16,33 @@ pub struct EDIDData {
 }
 
 #[derive(Debug, Readable)]
-pub struct DATAData {
-    pub color: VariantBytes,
+pub struct CNAMData {
+    pub color: RGB,
 }
 
 #[derive(Debug, Default)]
-pub struct GameSettingData {
+pub struct LCRTData {
     pub edid: Option<EDIDSubrecord>,
-    pub data: Option<DATASubrecord>,
+    pub cnam: Option<CNAMSubrecord>,
 }
 
-impl Readable for GameSettingData {
+impl Readable for LCRTData {
     fn read(reader: &mut EspReader) -> io::Result<Self> {
-        let mut record: GameSettingData = Default::default();
+        let mut record: LCRTData = Default::default();
         
         while reader.record_left() > 0 {
             let subrecord_type = reader.read_subrecord_type()?;
-
+            
             match subrecord_type {
                 SubrecordType::EDID => record.edid = Some(EDIDSubrecord::read(reader)?),
-                SubrecordType::DATA => record.data = Some(DATASubrecord::read(reader)?),
+                SubrecordType::CNAM => record.cnam = Some(CNAMSubrecord::read(reader)?),
                 _ => {
-                    let msg = format!("Unexpected subrecord code {:#?} found in GMST", subrecord_type);
+                    let msg = format!("Unexpected subrecord {:#?} found in LCRT", subrecord_type);
                     return Err(io::Error::new(io::ErrorKind::InvalidData, msg));
                 },
             }
         }
-        
+
         Ok(record)
     }
 }

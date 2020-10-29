@@ -1,7 +1,12 @@
 use crate::file::read::{EspReader, Readable, Peekable};
 use crate::records::record::RecordType;
-use crate::records::{gamesetting::GameSettingRecord, keyword::KeywordRecord};
-use crate::records::toprecord;
+use crate::records::{
+    tes4,
+    aact::AACTRecord,
+    gmst::GMSTRecord, 
+    kywd::KYWDRecord,
+    lcrt::LCRTRecord,
+};
 use crate::groups::group::Group;
 use crate::groups::group;
 use std::collections::HashMap;
@@ -9,14 +14,16 @@ use std::io;
 
 #[derive(Debug)]
 pub enum GroupVariant {
-    GameSetting(Group<GameSettingRecord>),
-    Keyword(Group<KeywordRecord>),
+    GMST(Group<GMSTRecord>),
+    KYWD(Group<KYWDRecord>),
+    AACT(Group<AACTRecord>),
+    LCRT(Group<LCRTRecord>),
     Unknown,
 }
 
 #[derive(Debug)]
 pub struct Plugin {
-    pub header: toprecord::TopRecord,
+    pub header: tes4::TES4,
     pub top_groups: HashMap<RecordType, GroupVariant>,
 }
 
@@ -33,16 +40,16 @@ impl Readable for Plugin {
     fn read(reader: &mut EspReader) -> io::Result<Self> {
         let mut plugin: Plugin = Default::default();
 
-        if reader.read_record_type()? != toprecord::CODE.into() {
+        if reader.read_record_type()? != tes4::CODE.into() {
             return Err(io::Error::new(
                 io::ErrorKind::InvalidData, 
                 "Invalid file, no TES4 code"
             ));
         } else {
-            plugin.header = toprecord::TopRecord::read(reader)?;
+            plugin.header = tes4::TES4::read(reader)?;
         }
 
-        for _ in 0..2 {            
+        for _ in 0..4 {            
             if reader.read_record_type()? != group::CODE.into() {
                 return Err(io::Error::new(
                     io::ErrorKind::InvalidData, 
@@ -52,8 +59,10 @@ impl Readable for Plugin {
                 let record_type = RecordType::peek(reader, 4i64)?;
 
                 let group = match &record_type {
-                    RecordType::GameSetting => {  GroupVariant::GameSetting(Group::<GameSettingRecord>::read(reader)?) },
-                    RecordType::Keyword     => { GroupVariant::Keyword(Group::<KeywordRecord>::read(reader)?) },
+                    RecordType::GMST => { GroupVariant::GMST(Group::<GMSTRecord>::read(reader)?) },
+                    RecordType::KYWD => { GroupVariant::KYWD(Group::<KYWDRecord>::read(reader)?) },
+                    RecordType::AACT => { GroupVariant::AACT(Group::<AACTRecord>::read(reader)?) },
+                    RecordType::LCRT => { GroupVariant::LCRT(Group::<LCRTRecord>::read(reader)?) },
                     _ => { 
                         return Err(io::Error::new(
                             io::ErrorKind::InvalidData, 

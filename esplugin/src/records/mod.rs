@@ -1,6 +1,8 @@
+pub mod aact;
 pub mod form;
-pub mod gamesetting;
+pub mod gmst;
 pub mod header;
-pub mod keyword;
+pub mod kywd;
+pub mod lcrt;
 pub mod record;
-pub mod toprecord;
+pub mod tes4;

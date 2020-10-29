@@ -6,7 +6,7 @@ use bitflags::bitflags;
 use esplugin_derive::*;
 use std::io;
 
-pub type TopRecord = Record<PluginFlags, TopRecordData>;
+pub type TES4 = Record<PluginFlags, TES4Data>;
 
 pub type HEDRSubrecord = Subrecord<HEDRData>;
 pub type CNAMSubrecord = Subrecord<CNAMData>;
@@ -77,7 +77,7 @@ pub struct INCCData {
 }
 
 #[derive(Debug, Default)]
-pub struct TopRecordData {
+pub struct TES4Data {
     pub hedr: Option<HEDRSubrecord>,
     pub cnam: Option<CNAMSubrecord>,
     pub snam: Option<SNAMSubrecord>,
@@ -88,9 +88,9 @@ pub struct TopRecordData {
     pub incc: Option<INCCSubrecord>,
 }
 
-impl Readable for TopRecordData {
+impl Readable for TES4Data {
     fn read(reader: &mut EspReader) -> io::Result<Self> {
-        let mut record: TopRecordData = Default::default();
+        let mut record: TES4Data = Default::default();
 
         while reader.record_left() > 0 {
             match reader.read_subrecord_type()? {

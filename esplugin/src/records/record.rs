@@ -10,8 +10,10 @@ use std::io;
 
 #[derive(Debug, Eq, PartialEq, FromPrimitive, Hash)]
 pub enum RecordType {
-    Keyword     = 0x4B595744,       // "KYWD"
-    GameSetting = 0x474D5354,       // "GMST"
+    KYWD = 0x4b595744,
+    GMST = 0x474d5354,
+    LCRT = 0x4c435254,
+    AACT = 0x41414354,
     Unknown,
 }
 
@@ -30,10 +32,6 @@ impl Peekable for RecordType {
 
         Ok(num.into())
     }
-}
-
-pub trait Coded {
-    fn code() -> RecordType;
 }
 
 bitflags! {

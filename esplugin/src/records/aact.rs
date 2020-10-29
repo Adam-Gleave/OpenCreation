@@ -1,17 +1,11 @@
 use crate::file::read::{EspReader, Readable};
 use crate::file::types::*;
-use crate::records::record::{Record, RecordFlags, RecordType, Coded};
+use crate::records::record::{Record, RecordFlags};
 use crate::subrecords::subrecord::{Subrecord, SubrecordType};
 use esplugin_derive::*;
 use std::io;
 
-pub type KeywordRecord = Record<RecordFlags, KeywordData>;
-
-impl Coded for KeywordRecord {
-    fn code() -> RecordType {
-        RecordType::Keyword
-    }
-}
+pub type AACTRecord = Record<RecordFlags, AACTData>;
 
 pub type EDIDSubrecord = Subrecord<EDIDData>;
 pub type CNAMSubrecord = Subrecord<CNAMData>;
@@ -27,22 +21,23 @@ pub struct CNAMData {
 }
 
 #[derive(Debug, Default)]
-pub struct KeywordData {
+pub struct AACTData {
     pub edid: Option<EDIDSubrecord>,
     pub cnam: Option<CNAMSubrecord>,
 }
 
-impl Readable for KeywordData {
+impl Readable for AACTData {
     fn read(reader: &mut EspReader) -> io::Result<Self> {
-        let mut record: KeywordData = Default::default();
+        let mut record: AACTData = Default::default();
         
         while reader.record_left() > 0 {
             let subrecord_type = reader.read_subrecord_type()?;
+            
             match subrecord_type {
                 SubrecordType::EDID => record.edid = Some(EDIDSubrecord::read(reader)?),
                 SubrecordType::CNAM => record.cnam = Some(CNAMSubrecord::read(reader)?),
                 _ => {
-                    let msg = format!("Unexpected subrecord {:#?} found in KYWD", subrecord_type);
+                    let msg = format!("Unexpected subrecord {:#?} found in AACT", subrecord_type);
                     return Err(io::Error::new(io::ErrorKind::InvalidData, msg));
                 },
             }
