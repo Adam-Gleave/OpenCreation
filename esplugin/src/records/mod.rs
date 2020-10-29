@@ -1,4 +1,5 @@
 pub mod aact;
+pub mod clas;
 pub mod form;
 pub mod glob;
 pub mod gmst;

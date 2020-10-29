@@ -34,8 +34,8 @@ impl VariantBytes {
         f32::from_be_bytes(self.bytes.clone())
     }
 
-    pub fn lstring(&self) -> u32 {
-        u32::from_be_bytes(self.bytes.clone())
+    pub fn lstring(&self) -> LString {
+        LString { index: u32::from_be_bytes(self.bytes.clone()) }
     }
 }
 
@@ -53,6 +53,11 @@ pub struct VersionControlInfo {
     pub vc_month: u8,
     pub vc_previous_id: u8,
     pub vc_current_id: u8,
+}
+
+#[derive(Debug, Readable)]
+pub struct LString {
+    pub index: u32,
 }
 
 #[derive(Debug, Eq, PartialEq)]

@@ -28,6 +28,9 @@ pub enum SubrecordType {
     DNAM = 0x444e414d,
     FNAM = 0x464e414d,
     FLTV = 0x464c5456,
+    FULL = 0x46554c4c,
+    DESC = 0x44455343,
+    ICON = 0x49434f4e,
     Unknown = 0,
 }
 
