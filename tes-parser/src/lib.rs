@@ -1,13 +1,14 @@
 mod parser;
 
+#[rustfmt::skip]
 pub use parser::{
-    Plugin,
-    Group,
-    GroupHeader,
-    Record,
-    RecordHeader,
-    Subrecord,
-    SubrecordHeader,
+    Group, 
+    GroupHeader, 
+    Plugin, 
+    Record, 
+    RecordHeader, 
+    Subrecord, 
+    SubrecordHeader, 
     TypeCode,
 };
 
@@ -26,15 +27,15 @@ impl std::fmt::Display for ParseError {
 
 pub fn read_plugin<R>(readable: R) -> Result<Plugin>
 where
-    R: std::io::Read
+    R: std::io::Read,
 {
     let mut reader = BufReader::new(readable);
-    let mut bytes = vec!();
+    let mut bytes = vec![];
     reader.read_to_end(&mut bytes).unwrap();
 
     let (remaining, plugin) = parser::parse_plugin(&bytes).unwrap();
     let bytes_remaining: Vec<u8> = remaining.iter().cloned().collect();
-    
+
     if bytes_remaining.len() == 0 {
         Ok(plugin)
     } else {
@@ -67,4 +68,3 @@ mod tests {
         assert_eq!(SKYRIM_PLUGIN.header.subrecords.len(), 3);
     }
 }
-

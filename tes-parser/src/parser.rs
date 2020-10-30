@@ -1,7 +1,7 @@
 use nom::bytes::complete::take;
 use nom::combinator::map;
 use nom::multi::many0;
-use nom::number::complete::{le_u32, le_i32, le_u16};
+use nom::number::complete::{le_i32, le_u16, le_u32};
 use nom::sequence::tuple;
 use nom::IResult;
 use std::convert::TryInto;
@@ -22,10 +22,8 @@ pub struct TypeCode {
 impl fmt::Debug for TypeCode {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let code = str::from_utf8(&self.code[..]).unwrap().to_owned();
-        f.debug_struct("TypeCode")
-         .field("code", &code)
-         .finish()
-    } 
+        f.debug_struct("TypeCode").field("code", &code).finish()
+    }
 }
 
 #[derive(Debug, PartialEq, Eq)]
@@ -52,7 +50,7 @@ pub struct Record {
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct RecordHeader {
-    pub code: TypeCode, 
+    pub code: TypeCode,
     pub size: u32,
     pub flags: u32,
     pub id: u32,
@@ -76,13 +74,7 @@ pub struct SubrecordHeader {
 pub fn parse_plugin(input: &[u8]) -> IResult<&[u8], Plugin> {
     let (remaining, header) = record(input)?;
     let (remaining, top_groups) = many0(group)(remaining)?;
-    Ok((
-        remaining,
-        Plugin {
-            header,
-            top_groups,
-        }
-    ))
+    Ok((remaining, Plugin { header, top_groups }))
 }
 
 fn type_code(input: &[u8]) -> IResult<&[u8], TypeCode> {
@@ -90,8 +82,10 @@ fn type_code(input: &[u8]) -> IResult<&[u8], TypeCode> {
     Ok((
         remaining,
         TypeCode {
-            code: code.try_into().expect("Parsing type code with incorrect length"),
-        }
+            code: code
+                .try_into()
+                .expect("Parsing type code with incorrect length"),
+        },
     ))
 }
 
@@ -99,19 +93,13 @@ pub fn group(input: &[u8]) -> IResult<&[u8], Group> {
     let (remaining, header) = group_header(input)?;
     let (remaining, records_bytes) = take(header.size - 24)(remaining)?;
     let (_, records) = many0(record)(records_bytes)?;
-    Ok((
-        remaining,
-        Group {
-            header,
-            records,
-        }
-    ))
+    Ok((remaining, Group { header, records }))
 }
 
 fn group_header(input: &[u8]) -> IResult<&[u8], GroupHeader> {
     map(
-    tuple((type_code, le_u32, le_u32, le_i32, le_u32, le_u32)),
-    |(code, size, label, group_type, vc_info, unknown)| GroupHeader {
+        tuple((type_code, le_u32, le_u32, le_i32, le_u32, le_u32)),
+        |(code, size, label, group_type, vc_info, unknown)| GroupHeader {
             code,
             size,
             label,
@@ -126,13 +114,7 @@ pub fn record(input: &[u8]) -> IResult<&[u8], Record> {
     let (remaining, header) = record_header(input)?;
     let (remaining, subrecords_bytes) = take(header.size)(remaining)?;
     let (_, subrecords) = many0(subrecord)(subrecords_bytes)?;
-    Ok((
-        remaining,
-        Record {
-            header,
-            subrecords,
-        }
-    ))
+    Ok((remaining, Record { header, subrecords }))
 }
 
 fn record_header(input: &[u8]) -> IResult<&[u8], RecordHeader> {
@@ -155,19 +137,16 @@ fn subrecord(input: &[u8]) -> IResult<&[u8], Subrecord> {
     let (remaining, data) = take(header.size)(remaining)?;
     Ok((
         remaining,
-        Subrecord { 
-            header, 
-            data: data.iter().cloned().collect() 
-        }
+        Subrecord {
+            header,
+            data: data.iter().cloned().collect(),
+        },
     ))
 }
 
 fn subrecord_header(input: &[u8]) -> IResult<&[u8], SubrecordHeader> {
-    map(
-        tuple((type_code, le_u16)),
-        |(code, size)| SubrecordHeader {
-            code,
-            size,
-        },
-    )(input)
+    map(tuple((type_code, le_u16)), |(code, size)| SubrecordHeader {
+        code,
+        size,
+    })(input)
 }
