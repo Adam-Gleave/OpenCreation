@@ -1,6 +1,3 @@
-[submodule "openck/imgui"]
-	path = openck/imgui
-	url = https://github.com/luke-titley/imgui-docking-rs
 [submodule "extern/imgui"]
 	path = extern/imgui
 	url = https://github.com/luke-titley/imgui-rs
