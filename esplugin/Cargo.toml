@@ -8,10 +8,5 @@ edition = "2018"
 
 [dependencies]
 bitflags = "1.2.1"
-byteorder = "1"
-lazy_static = "0.1.4"
-num = "0.3"
-num-derive = "0.3.2"
-num-traits = "0.2.12"
-
-esplugin-derive = { path = "../esplugin-derive" }
+nom = "5"
+lazy_static = "1.4"
