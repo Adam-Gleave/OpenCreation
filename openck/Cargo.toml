@@ -1,0 +1,6 @@
+[workspace]
+members = [
+    "editor",
+    "session",
+    "tes-parser",
+]
