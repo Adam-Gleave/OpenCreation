@@ -26,7 +26,7 @@ pub fn init(title: &str) -> System {
     let context = glutin::ContextBuilder::new().with_vsync(true);
     let builder = WindowBuilder::new()
         .with_title(title.to_owned())
-        .with_inner_size(glutin::dpi::LogicalSize::new(1280f64, 800f64));
+        .with_maximized(true);
     let display =
         Display::new(builder, context, &event_loop).expect("Failed to initialize display");
 
