@@ -12,9 +12,9 @@ pub struct Drawer<'a> {
 impl<'a> Drawer<'a> {
     pub fn new(name: String) -> Self {
         Self {
-            nodes: vec![], 
-            name, 
-            opened: (false, Condition::FirstUseEver) 
+            nodes: vec![],
+            name,
+            opened: (false, Condition::FirstUseEver),
         }
     }
 
@@ -79,88 +79,91 @@ impl<'a> TreeView<'a> {
                 node: TreeNode::new(im_str!("ActorNode")).label(im_str!("Actors")),
                 code: "NPC_",
             })
-            .with_drawer(Drawer::new("Audio".to_owned())
-                .with_node(Node {
-                    node: TreeNode::new(im_str!("AcousticSpaceNode")).label(im_str!("Acoustic Space")),
-                    code: "ASPC",
-                })
-                .with_node(Node {
-                    node: TreeNode::new(im_str!("MusicTrackNode")).label(im_str!("Music Track")),
-                    code: "MUST",
-                })
-                .with_node(Node {
-                    node: TreeNode::new(im_str!("MusicTypeNode")).label(im_str!("Music Type")),
-                    code: "MUSC",
-                })
-                .with_node(Node {
-                    node: TreeNode::new(im_str!("ReverbNode")).label(im_str!("Reverb Parameters")),
-                    code: "REVB",
-                })                
-                .with_node(Node {
-                    node: TreeNode::new(im_str!("SoundCategoryNode")).label(im_str!("Sound Category")),
-                    code: "SNCT",
-                })
-                .with_node(Node {
-                    node: TreeNode::new(im_str!("SoundDescriptorNode")).label(im_str!("Sound Descriptor")),
-                    code: "SNDR",
-                })
-                .with_node(Node {
-                    node: TreeNode::new(im_str!("SoundMarkerNode")).label(im_str!("Sound Marker")),
-                    code: "SOUN",
-                })
-                .with_node(Node {
-                    node: TreeNode::new(im_str!("SoundOutputModelNode")).label(im_str!("Sound Output Model")),
-                    code: "SOPM",
-                }))
-            .with_drawer(Drawer::new("Character".to_owned())
-                .with_node(Node {
-                    node: TreeNode::new(im_str!("AIPackageNode")).label(im_str!("AI Package")),
-                    code: "PACK",
-                })
-                .with_node(Node {
-                    node: TreeNode::new(im_str!("AssociationTypeNode")).label(im_str!("Association Type")),
-                    code: "ASTP",
-                })
-                .with_node(Node {
-                    node: TreeNode::new(im_str!("ClassNode")).label(im_str!("Class")),
-                    code: "CLAS",
-                })
-                .with_node(Node {
-                    node: TreeNode::new(im_str!("EquipSlotNode")).label(im_str!("Equip Slot")),
-                    code: "EQUP",
-                })
-                .with_node(Node {
-                    node: TreeNode::new(im_str!("FactionNode")).label(im_str!("Faction")),
-                    code: "FACT",
-                })
-                .with_node(Node {
-                    node: TreeNode::new(im_str!("HeadPartNode")).label(im_str!("HeadPart")),
-                    code: "HDPT",
-                })
-                .with_node(Node {
-                    node: TreeNode::new(im_str!("MovementTypeNode")).label(im_str!("Movement Type")),
-                    code: "MOVT",
-                })
-                .with_node(Node {
-                    node: TreeNode::new(im_str!("QuestNode")).label(im_str!("Quest")),
-                    code: "QUST",
-                })
-                .with_node(Node {
-                    node: TreeNode::new(im_str!("RaceNode")).label(im_str!("Race")),
-                    code: "RACE",
-                })
-                .with_node(Node {
-                    node: TreeNode::new(im_str!("RelationshipNode")).label(im_str!("Relationship")),
-                    code: "RELA",
-                })
-                .with_node(Node {
-                    node: TreeNode::new(im_str!("StoryManagerEventNode")).label(im_str!("Story Manager Event Node")),
-                    code: "SMEN",
-                })
-                .with_node(Node {
-                    node: TreeNode::new(im_str!("VoiceTypeNode")).label(im_str!("Voice Type")),
-                    code: "VTYP",
-                }),
+            .with_drawer(
+                Drawer::new("Audio".to_owned())
+                    .with_node(Node {
+                        node: TreeNode::new(im_str!("AcousticSpaceNode")).label(im_str!("Acoustic Space")),
+                        code: "ASPC",
+                    })
+                    .with_node(Node {
+                        node: TreeNode::new(im_str!("MusicTrackNode")).label(im_str!("Music Track")),
+                        code: "MUST",
+                    })
+                    .with_node(Node {
+                        node: TreeNode::new(im_str!("MusicTypeNode")).label(im_str!("Music Type")),
+                        code: "MUSC",
+                    })
+                    .with_node(Node {
+                        node: TreeNode::new(im_str!("ReverbNode")).label(im_str!("Reverb Parameters")),
+                        code: "REVB",
+                    })
+                    .with_node(Node {
+                        node: TreeNode::new(im_str!("SoundCategoryNode")).label(im_str!("Sound Category")),
+                        code: "SNCT",
+                    })
+                    .with_node(Node {
+                        node: TreeNode::new(im_str!("SoundDescriptorNode")).label(im_str!("Sound Descriptor")),
+                        code: "SNDR",
+                    })
+                    .with_node(Node {
+                        node: TreeNode::new(im_str!("SoundMarkerNode")).label(im_str!("Sound Marker")),
+                        code: "SOUN",
+                    })
+                    .with_node(Node {
+                        node: TreeNode::new(im_str!("SoundOutputModelNode")).label(im_str!("Sound Output Model")),
+                        code: "SOPM",
+                    }),
+            )
+            .with_drawer(
+                Drawer::new("Character".to_owned())
+                    .with_node(Node {
+                        node: TreeNode::new(im_str!("AIPackageNode")).label(im_str!("AI Package")),
+                        code: "PACK",
+                    })
+                    .with_node(Node {
+                        node: TreeNode::new(im_str!("AssociationTypeNode")).label(im_str!("Association Type")),
+                        code: "ASTP",
+                    })
+                    .with_node(Node {
+                        node: TreeNode::new(im_str!("ClassNode")).label(im_str!("Class")),
+                        code: "CLAS",
+                    })
+                    .with_node(Node {
+                        node: TreeNode::new(im_str!("EquipSlotNode")).label(im_str!("Equip Slot")),
+                        code: "EQUP",
+                    })
+                    .with_node(Node {
+                        node: TreeNode::new(im_str!("FactionNode")).label(im_str!("Faction")),
+                        code: "FACT",
+                    })
+                    .with_node(Node {
+                        node: TreeNode::new(im_str!("HeadPartNode")).label(im_str!("HeadPart")),
+                        code: "HDPT",
+                    })
+                    .with_node(Node {
+                        node: TreeNode::new(im_str!("MovementTypeNode")).label(im_str!("Movement Type")),
+                        code: "MOVT",
+                    })
+                    .with_node(Node {
+                        node: TreeNode::new(im_str!("QuestNode")).label(im_str!("Quest")),
+                        code: "QUST",
+                    })
+                    .with_node(Node {
+                        node: TreeNode::new(im_str!("RaceNode")).label(im_str!("Race")),
+                        code: "RACE",
+                    })
+                    .with_node(Node {
+                        node: TreeNode::new(im_str!("RelationshipNode")).label(im_str!("Relationship")),
+                        code: "RELA",
+                    })
+                    .with_node(Node {
+                        node: TreeNode::new(im_str!("StoryManagerEventNode")).label(im_str!("Story Manager Event Node")),
+                        code: "SMEN",
+                    })
+                    .with_node(Node {
+                        node: TreeNode::new(im_str!("VoiceTypeNode")).label(im_str!("Voice Type")),
+                        code: "VTYP",
+                    }),
             )
             .with_drawer(
                 Drawer::new("Items".to_owned())
@@ -218,108 +221,110 @@ impl<'a> TreeView<'a> {
                     }),
             )
             .with_drawer(Drawer::new("Magic".to_owned()))
-            .with_drawer(Drawer::new("Miscellaneous".to_owned())
-                .with_node(Node {
-                    node: TreeNode::new(im_str!("AnimationObjectNode")).label(im_str!("Animation Object")),
-                    code: "ANIO",
-                })
-                .with_node(Node {
-                    node: TreeNode::new(im_str!("ArtObjectNode")).label(im_str!("Art Object")),
-                    code: "ARTO",
-                })
-                .with_node(Node {
-                    node: TreeNode::new(im_str!("CollisionLayerNode")).label(im_str!("Collision Layer")),
-                    code: "COLL",
-                })
-                .with_node(Node {
-                    node: TreeNode::new(im_str!("ColorFormNode")).label(im_str!("Color Form")),
-                    code: "CLFM",
-                })
-                .with_node(Node {
-                    node: TreeNode::new(im_str!("CombatStyleNode")).label(im_str!("Combat Style")),
-                    code: "CSTY",
-                })
-                .with_node(Node {
-                    node: TreeNode::new(im_str!("FormListNode")).label(im_str!("Form List")),
-                    code: "FLST",
-                })
-                .with_node(Node {
-                    node: TreeNode::new(im_str!("GlobalNode")).label(im_str!("Global")),
-                    code: "GLOB",
-                })
-                .with_node(Node {
-                    node: TreeNode::new(im_str!("IdleMarkerNode")).label(im_str!("Idle Marker")),
-                    code: "IDLM",
-                })
-                .with_node(Node {
-                    node: TreeNode::new(im_str!("KeywordNode")).label(im_str!("Keyword")),
-                    code: "KYWD",
-                })
-                .with_node(Node {
-                    node: TreeNode::new(im_str!("LandTextureNode")).label(im_str!("Land Texture")),
-                    code: "LTEX",
-                })
-                .with_node(Node {
-                    node: TreeNode::new(im_str!("LoadScreenNode")).label(im_str!("Load Screen")),
-                    code: "LSCR",
-                })
-                .with_node(Node {
-                    node: TreeNode::new(im_str!("MaterialObjectNode")).label(im_str!("Material Object")),
-                    code: "MATO",
-                })
-                .with_node(Node {
-                    node: TreeNode::new(im_str!("MessageNode")).label(im_str!("Message")),
-                    code: "MESG",
-                })
-                .with_node(Node {
-                    node: TreeNode::new(im_str!("TextureSetNode")).label(im_str!("Texture Set")),
-                    code: "TXST",
-                }),
+            .with_drawer(
+                Drawer::new("Miscellaneous".to_owned())
+                    .with_node(Node {
+                        node: TreeNode::new(im_str!("AnimationObjectNode")).label(im_str!("Animation Object")),
+                        code: "ANIO",
+                    })
+                    .with_node(Node {
+                        node: TreeNode::new(im_str!("ArtObjectNode")).label(im_str!("Art Object")),
+                        code: "ARTO",
+                    })
+                    .with_node(Node {
+                        node: TreeNode::new(im_str!("CollisionLayerNode")).label(im_str!("Collision Layer")),
+                        code: "COLL",
+                    })
+                    .with_node(Node {
+                        node: TreeNode::new(im_str!("ColorFormNode")).label(im_str!("Color Form")),
+                        code: "CLFM",
+                    })
+                    .with_node(Node {
+                        node: TreeNode::new(im_str!("CombatStyleNode")).label(im_str!("Combat Style")),
+                        code: "CSTY",
+                    })
+                    .with_node(Node {
+                        node: TreeNode::new(im_str!("FormListNode")).label(im_str!("Form List")),
+                        code: "FLST",
+                    })
+                    .with_node(Node {
+                        node: TreeNode::new(im_str!("GlobalNode")).label(im_str!("Global")),
+                        code: "GLOB",
+                    })
+                    .with_node(Node {
+                        node: TreeNode::new(im_str!("IdleMarkerNode")).label(im_str!("Idle Marker")),
+                        code: "IDLM",
+                    })
+                    .with_node(Node {
+                        node: TreeNode::new(im_str!("KeywordNode")).label(im_str!("Keyword")),
+                        code: "KYWD",
+                    })
+                    .with_node(Node {
+                        node: TreeNode::new(im_str!("LandTextureNode")).label(im_str!("Land Texture")),
+                        code: "LTEX",
+                    })
+                    .with_node(Node {
+                        node: TreeNode::new(im_str!("LoadScreenNode")).label(im_str!("Load Screen")),
+                        code: "LSCR",
+                    })
+                    .with_node(Node {
+                        node: TreeNode::new(im_str!("MaterialObjectNode")).label(im_str!("Material Object")),
+                        code: "MATO",
+                    })
+                    .with_node(Node {
+                        node: TreeNode::new(im_str!("MessageNode")).label(im_str!("Message")),
+                        code: "MESG",
+                    })
+                    .with_node(Node {
+                        node: TreeNode::new(im_str!("TextureSetNode")).label(im_str!("Texture Set")),
+                        code: "TXST",
+                    }),
             )
             .with_drawer(Drawer::new("Special Effects".to_owned()))
             .with_drawer(Drawer::new("World Data".to_owned()))
-            .with_drawer(Drawer::new("World Objects".to_owned())
-                .with_node(Node {
-                    node: TreeNode::new(im_str!("ActivatorNode")).label(im_str!("Activator")),
-                    code: "ACTI",
-                })
-                .with_node(Node {
-                    node: TreeNode::new(im_str!("ContainerNode")).label(im_str!("Container")),
-                    code: "CONT",
-                })
-                .with_node(Node {
-                    node: TreeNode::new(im_str!("DoorNode")).label(im_str!("Door")),
-                    code: "DOOR",
-                })
-                .with_node(Node {
-                    node: TreeNode::new(im_str!("FloraNode")).label(im_str!("Flora")),
-                    code: "FLOR",
-                })
-                .with_node(Node {
-                    node: TreeNode::new(im_str!("FurnitureNode")).label(im_str!("Furniture")),
-                    code: "FURN",
-                })
-                .with_node(Node {
-                    node: TreeNode::new(im_str!("GrassNode")).label(im_str!("Grass")),
-                    code: "GRAS",
-                })
-                .with_node(Node {
-                    node: TreeNode::new(im_str!("LightNode")).label(im_str!("Light")),
-                    code: "LIGH",
-                })
-                .with_node(Node {
-                    node: TreeNode::new(im_str!("MovableStaticNode")).label(im_str!("Movable Static")),
-                    code: "MSTT",
-                })
-                .with_node(Node {
-                    node: TreeNode::new(im_str!("StaticNode")).label(im_str!("Static")),
-                    code: "STAT",
-                })
-                // TERMINAL?
-                .with_node(Node {
-                    node: TreeNode::new(im_str!("TreeNode")).label(im_str!("Tree")),
-                    code: "TREE",
-                }),
+            .with_drawer(
+                Drawer::new("World Objects".to_owned())
+                    .with_node(Node {
+                        node: TreeNode::new(im_str!("ActivatorNode")).label(im_str!("Activator")),
+                        code: "ACTI",
+                    })
+                    .with_node(Node {
+                        node: TreeNode::new(im_str!("ContainerNode")).label(im_str!("Container")),
+                        code: "CONT",
+                    })
+                    .with_node(Node {
+                        node: TreeNode::new(im_str!("DoorNode")).label(im_str!("Door")),
+                        code: "DOOR",
+                    })
+                    .with_node(Node {
+                        node: TreeNode::new(im_str!("FloraNode")).label(im_str!("Flora")),
+                        code: "FLOR",
+                    })
+                    .with_node(Node {
+                        node: TreeNode::new(im_str!("FurnitureNode")).label(im_str!("Furniture")),
+                        code: "FURN",
+                    })
+                    .with_node(Node {
+                        node: TreeNode::new(im_str!("GrassNode")).label(im_str!("Grass")),
+                        code: "GRAS",
+                    })
+                    .with_node(Node {
+                        node: TreeNode::new(im_str!("LightNode")).label(im_str!("Light")),
+                        code: "LIGH",
+                    })
+                    .with_node(Node {
+                        node: TreeNode::new(im_str!("MovableStaticNode")).label(im_str!("Movable Static")),
+                        code: "MSTT",
+                    })
+                    .with_node(Node {
+                        node: TreeNode::new(im_str!("StaticNode")).label(im_str!("Static")),
+                        code: "STAT",
+                    })
+                    // TERMINAL?
+                    .with_node(Node {
+                        node: TreeNode::new(im_str!("TreeNode")).label(im_str!("Tree")),
+                        code: "TREE",
+                    }),
             );
 
         tree_view.build(ui, &ui_state);

@@ -38,7 +38,7 @@ where
 
 #[cfg(test)]
 mod tests {
-    use crate::{read_plugin, Plugin, parser::TypeCode};
+    use crate::{parser::TypeCode, read_plugin, Plugin};
     use lazy_static::lazy_static;
     use std::fs::File;
     use std::path::PathBuf;
