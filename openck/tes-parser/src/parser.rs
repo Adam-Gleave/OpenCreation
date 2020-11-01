@@ -34,6 +34,12 @@ impl From<u32> for TypeCode {
     }
 }
 
+impl Into<u32> for TypeCode {
+    fn into(self) -> u32 {
+        unsafe { std::mem::transmute(self.code) }
+    }
+}
+
 impl TypeCode {
     pub fn from_utf8(input: &str) -> Result<Self, std::io::Error> {
         let bytes = input.as_bytes();
@@ -101,7 +107,7 @@ pub struct GroupHeader {
     pub unknown: u32,
 }
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Record {
     pub header: RecordHeader,
     pub subrecords: Vec<Subrecord>,
@@ -113,7 +119,7 @@ impl Record {
             None
         } else {
             let edid_subrecord = self.subrecords.iter().find(|s| {
-                s.header.code == TypeCode::from_utf8("EDID").unwrap()
+                return s.header.code == TypeCode::from_utf8("EDID").unwrap();
             });
 
             if let Some(edid) = edid_subrecord {
@@ -125,7 +131,7 @@ impl Record {
     }
 }
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct RecordHeader {
     pub code: TypeCode,
     pub size: u32,
@@ -136,13 +142,13 @@ pub struct RecordHeader {
     pub unknown: u16,
 }
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Subrecord {
     pub header: SubrecordHeader,
     pub data: Vec<u8>,
 }
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct SubrecordHeader {
     pub code: TypeCode,
     pub size: u16,

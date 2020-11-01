@@ -9,7 +9,7 @@ pub use tes_parser::{
 use std::collections::HashMap;
 use std::fs::File;
 pub struct Plugin {
-    plugin_data: tes_parser::Plugin,
+    pub plugin_data: tes_parser::Plugin,
     record_map: HashMap<u32, RecordIndex>,
     base: bool,
 }
