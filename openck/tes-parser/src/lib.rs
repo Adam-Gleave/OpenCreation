@@ -1,3 +1,4 @@
+mod error;
 mod parser;
 
 #[rustfmt::skip]
@@ -12,18 +13,10 @@ pub use parser::{
     TypeCode,
 };
 
+pub use error::ParseError;
 use std::io::{BufReader, Read};
 
 pub type Result<T> = std::result::Result<T, ParseError>;
-
-#[derive(Debug, Clone)]
-pub struct ParseError;
-
-impl std::fmt::Display for ParseError {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "Error parsing plugin file")
-    }
-}
 
 pub fn read_plugin<R>(readable: R) -> Result<Plugin>
 where
@@ -31,15 +24,15 @@ where
 {
     let mut reader = BufReader::new(readable);
     let mut bytes = vec![];
-    reader.read_to_end(&mut bytes).unwrap();
+    reader.read_to_end(&mut bytes)?;
 
-    let (remaining, plugin) = parser::parse_plugin(&bytes).unwrap();
+    let (remaining, plugin) = parser::parse_plugin(&bytes)?;
     let bytes_remaining: Vec<u8> = remaining.iter().cloned().collect();
 
     if bytes_remaining.len() == 0 {
         Ok(plugin)
     } else {
-        Err(ParseError)
+        Err(ParseError::new("Parser failed to interpret all bytes"))
     }
 }
 

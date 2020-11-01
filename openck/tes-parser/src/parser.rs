@@ -14,7 +14,7 @@ pub struct Plugin {
     pub top_groups: Vec<Group>,
 }
 
-#[derive(PartialEq, Eq)]
+#[derive(Copy, Clone, PartialEq, Eq)]
 pub struct TypeCode {
     pub code: [u8; 4],
 }
@@ -26,10 +26,69 @@ impl fmt::Debug for TypeCode {
     }
 }
 
+impl From<u32> for TypeCode {
+    fn from(input: u32) -> Self {
+        Self {
+            code: unsafe { std::mem::transmute(input.to_le()) }  
+        } 
+    }
+}
+
+impl TypeCode {
+    pub fn from_utf8(input: &str) -> Result<Self, std::io::Error> {
+            let bytes = input.as_bytes();
+            
+            if let Ok(code_byte_arr) = bytes.try_into() {
+                Ok(Self { code: code_byte_arr })
+            } else {
+                Err(std::io::Error::new(
+                    std::io::ErrorKind::InvalidData, 
+                    "Type code string is required to be 4 characters long",
+                ))
+            }
+    }
+
+    pub fn to_utf8(&self) -> Result<&str, std::str::Utf8Error> {
+        std::str::from_utf8(&self.code)
+    }
+}
+
+pub enum GroupType {
+    Top = 0,
+    WorldChildren = 1,
+    InteriorCellBlock = 2,
+    InteriorSubCellBlock = 3,
+    ExteriorCellBlock = 4,
+    ExteriorSubCellBlock = 5,
+    CellChildren = 6,
+    TopicChildren = 7,
+    CellPersistenChildren = 8,
+    CellTemporaryChildren = 9,
+}
+
 #[derive(Debug, PartialEq, Eq)]
 pub struct Group {
     pub header: GroupHeader,
     pub records: Vec<Record>,
+}
+
+impl Group {
+    pub fn type_code(&self) -> Option<TypeCode> {
+        // Make sure this is a top group
+        if self.header.group_type == GroupType::Top as i32 {
+            Some(self.header.label.into())
+        } else {
+            None
+        }
+    }
+
+    pub fn top_group_matches_type(&self, code: TypeCode) -> bool {
+        if let Some(group_type_code) = self.type_code() {
+            code == group_type_code
+        } else {
+            false
+        }
+    }
 }
 
 #[derive(Debug, PartialEq, Eq)]
