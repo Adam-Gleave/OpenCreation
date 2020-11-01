@@ -24,11 +24,8 @@ pub fn init(title: &str) -> System {
     };
     let event_loop = EventLoop::new();
     let context = glutin::ContextBuilder::new().with_vsync(true);
-    let builder = WindowBuilder::new()
-        .with_title(title.to_owned())
-        .with_maximized(true);
-    let display =
-        Display::new(builder, context, &event_loop).expect("Failed to initialize display");
+    let builder = WindowBuilder::new().with_title(title.to_owned()).with_maximized(true);
+    let display = Display::new(builder, context, &event_loop).expect("Failed to initialize display");
 
     let mut imgui = Context::create();
     imgui.set_ini_filename(None);
@@ -113,9 +110,7 @@ impl System {
                 target.clear_color_srgb(1.0, 1.0, 1.0, 1.0);
                 platform.prepare_render(&ui, gl_window.window());
                 let draw_data = ui.render();
-                renderer
-                    .render(&mut target, draw_data)
-                    .expect("Rendering failed");
+                renderer.render(&mut target, draw_data).expect("Rendering failed");
                 target.finish().expect("Failed to swap buffers");
             }
             Event::WindowEvent {

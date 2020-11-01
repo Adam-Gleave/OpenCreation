@@ -8,7 +8,9 @@ pub struct ParseError {
 
 impl ParseError {
     pub fn new(description: &str) -> ParseError {
-        Self { description: description.to_owned() }
+        Self {
+            description: description.to_owned(),
+        }
     }
 }
 
@@ -33,5 +35,5 @@ impl From<io::Error> for ParseError {
 impl From<nom::Err<(&[u8], nom::error::ErrorKind)>> for ParseError {
     fn from(error: nom::Err<(&[u8], nom::error::ErrorKind)>) -> Self {
         Self::new(&error.to_string())
-    } 
-} 
+    }
+}

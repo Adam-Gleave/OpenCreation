@@ -29,23 +29,23 @@ impl fmt::Debug for TypeCode {
 impl From<u32> for TypeCode {
     fn from(input: u32) -> Self {
         Self {
-            code: unsafe { std::mem::transmute(input.to_le()) }  
-        } 
+            code: unsafe { std::mem::transmute(input.to_le()) },
+        }
     }
 }
 
 impl TypeCode {
     pub fn from_utf8(input: &str) -> Result<Self, std::io::Error> {
-            let bytes = input.as_bytes();
-            
-            if let Ok(code_byte_arr) = bytes.try_into() {
-                Ok(Self { code: code_byte_arr })
-            } else {
-                Err(std::io::Error::new(
-                    std::io::ErrorKind::InvalidData, 
-                    "Type code string is required to be 4 characters long",
-                ))
-            }
+        let bytes = input.as_bytes();
+
+        if let Ok(code_byte_arr) = bytes.try_into() {
+            Ok(Self { code: code_byte_arr })
+        } else {
+            Err(std::io::Error::new(
+                std::io::ErrorKind::InvalidData,
+                "Type code string is required to be 4 characters long",
+            ))
+        }
     }
 
     pub fn to_utf8(&self) -> Result<&str, std::str::Utf8Error> {
@@ -141,9 +141,7 @@ fn type_code(input: &[u8]) -> IResult<&[u8], TypeCode> {
     Ok((
         remaining,
         TypeCode {
-            code: code
-                .try_into()
-                .expect("Parsing type code with incorrect length"),
+            code: code.try_into().expect("Parsing type code with incorrect length"),
         },
     ))
 }
@@ -204,8 +202,5 @@ fn subrecord(input: &[u8]) -> IResult<&[u8], Subrecord> {
 }
 
 fn subrecord_header(input: &[u8]) -> IResult<&[u8], SubrecordHeader> {
-    map(tuple((type_code, le_u16)), |(code, size)| SubrecordHeader {
-        code,
-        size,
-    })(input)
+    map(tuple((type_code, le_u16)), |(code, size)| SubrecordHeader { code, size })(input)
 }

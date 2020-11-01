@@ -45,11 +45,7 @@ mod tests {
 
     lazy_static! {
         static ref SKYRIM_PLUGIN: Plugin = {
-            let path = PathBuf::from(format!(
-                "{}{}",
-                env!("CARGO_MANIFEST_DIR"),
-                "/../data/Skyrim.esm"
-            ));
+            let path = PathBuf::from(format!("{}{}", env!("CARGO_MANIFEST_DIR"), "/../data/Skyrim.esm"));
             let file = File::open(path).unwrap();
             read_plugin(file).unwrap()
         };
