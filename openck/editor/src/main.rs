@@ -41,7 +41,7 @@ fn main() {
 
         DockSpace::new(im_str!("Dockspace")).over_viewport();
 
-        TreeView::new().build(&ui, Arc::clone(&ui_state));
+        TreeView::new().display(&ui, Arc::clone(&ui_state));
 
         Window::new(im_str!("Scene"))
             .position([420f32, 10f32 + menu_y], Condition::FirstUseEver)
