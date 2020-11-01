@@ -107,6 +107,24 @@ pub struct Record {
     pub subrecords: Vec<Subrecord>,
 }
 
+impl Record {
+    pub fn editor_id(&self) -> Option<String> {
+        if self.subrecords.is_empty() {
+            None
+        } else {
+            let edid_subrecord = self.subrecords.iter().find(|s| {
+                s.header.code == TypeCode::from_utf8("EDID").unwrap()
+            });
+
+            if let Some(edid) = edid_subrecord {
+                Some(String::from_utf8(edid.data.clone()).unwrap())
+            } else {
+                None
+            }
+        }
+    }
+}
+
 #[derive(Debug, PartialEq, Eq)]
 pub struct RecordHeader {
     pub code: TypeCode,

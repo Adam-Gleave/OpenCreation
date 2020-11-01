@@ -118,11 +118,11 @@ fn build_nodes_from_type<F: Fn()>(code: TypeCode, state: &RwLockReadGuard<State>
 
     records.iter().enumerate().for_each(|(pos, r)| {
         let id_string = format!("{}Leaf{}{}", code.to_utf8().unwrap(), pos, "\0");
-        let text_string = format!("ID: {:#010x}{}", r.header.id, "\0");
+        let label = format!("{}\0", r.editor_id().unwrap_or("Unnamed".to_owned()));
 
         TreeNode::new(unsafe { ImStr::from_utf8_with_nul_unchecked(id_string.as_bytes()) })
             .leaf(true)
-            .label(unsafe { ImStr::from_utf8_with_nul_unchecked(text_string.as_bytes()) })
+            .label(unsafe { ImStr::from_utf8_with_nul_unchecked(label.as_bytes()) })
             .build(&ui, || {
                 f();
             });
