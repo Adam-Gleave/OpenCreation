@@ -1,6 +1,6 @@
 use std::{borrow::Borrow, fs::File};
 
-use open_creation_ui::{AboutWindow, LogWindow, Window};
+use open_creation_ui::{AboutWindow, GameSettingsWindow, LogWindow, Window};
 use open_creation_util::{log, Logger};
 
 use bevy::prelude::*;
@@ -63,9 +63,20 @@ fn top_panel(mut egui_ctx: ResMut<EguiContext>, mut ui_state: ResMut<ui_state::S
 
     egui::TopPanel::top("top_panel").show(ctx, |ui| {
         egui::menu::bar(ui, |ui| {
+            egui::menu::menu(ui, "File", |ui| {
+                menu_button(ui, "Data");
+                menu_button(ui, "Close");
+            });
+
             egui::menu::menu(ui, "View", |ui| {
                 if menu_button(ui, "Show log").clicked() {
                     ui_state.show_log = !ui_state.show_log;
+                }
+            });
+
+            egui::menu::menu(ui, "Gameplay", |ui| {
+                if menu_button(ui, "Game Settings").clicked() {
+                    ui_state.show_game_settings = !ui_state.show_game_settings;
                 }
             });
 
@@ -188,11 +199,24 @@ fn left_panel(mut egui_ctx: ResMut<EguiContext>, plugins: Res<PluginResource>) {
     });
 }
 
-fn windows(mut egui_ctx: ResMut<EguiContext>, mut ui_state: ResMut<ui_state::State>) {
+fn windows(mut egui_ctx: ResMut<EguiContext>, mut ui_state: ResMut<ui_state::State>, plugins: Res<PluginResource>) {
     let ctx = &mut egui_ctx.ctx;
 
     if ui_state.show_about {
         AboutWindow::new().show(ctx, &mut ui_state.show_about);
+    }
+
+    if ui_state.show_game_settings {
+        let mut game_settings_window = GameSettingsWindow::new();
+        let plugins = &plugins.borrow().0;
+
+        for plugin in plugins {
+            for editor_id in plugin.get_editor_ids_by_code([b'G', b'M', b'S', b'T']) {
+                game_settings_window.add_entry(editor_id);
+            }
+        }
+
+        game_settings_window.show(ctx, &mut ui_state.show_game_settings);
     }
 
     if ui_state.show_log {
