@@ -1,80 +1,30 @@
-use std::{borrow::{Borrow, BorrowMut}, collections::VecDeque, fs::File, io::Write, sync::{mpsc::{Receiver, sync_channel}, Mutex}};
+use std::{borrow::Borrow, fs::File, sync::atomic::Ordering};
 
-use bevy::{prelude::*, tasks::{self, Task, TaskPool, TaskPoolBuilder, prelude::*}};
+use open_creation_ui::{LogWindow, Window};
+use open_creation_util::{log, Logger};
+
+use bevy::prelude::*;
 use bevy_egui::{egui, EguiContext, EguiPlugin};
-use log::LevelFilter;
-use tes_parse::{Plugin, read_plugin};
 use lazy_static::lazy_static;
+use tes_parse::{read_plugin, Plugin};
 
-struct PluginResource(Vec<Plugin>);
-
-const LOG_CAPACITY: usize = 1000;
+mod ui_state;
 
 lazy_static! {
     static ref LOGGER: Logger = Logger::new();
 }
 
-struct Logger {
-    level: Mutex<log::LevelFilter>,
-    lines: Mutex<VecDeque<String>>,
-}
-
-impl Logger {
-    pub fn new() -> Self {
-        Self { 
-            level: Mutex::new(log::LevelFilter::Warn),
-            lines: Mutex::new(VecDeque::with_capacity(LOG_CAPACITY)),
-        }
-    }
-
-    pub fn filter(&self, filter: log::LevelFilter) {
-        *self.level.lock().unwrap() = filter;
-    }
-}
-
-impl log::Log for Logger {
-    fn enabled(&self, metadata: &log::Metadata) -> bool {
-        metadata.level() <= *self.level.lock().unwrap()
-    }
-
-    fn log(&self, record: &log::Record) {
-        if let Some(module) = record.module_path() {
-            if module.to_owned().contains("tes_parse") {
-                let mut lines = self.lines.lock().unwrap();
-
-                if lines.len() > LOG_CAPACITY {
-                    lines.pop_front();
-                }
-
-                lines.push_back(format!("{}", record.args()));
-            }
-        }
-    }
-    
-    fn flush(&self) {}
-}
-
-struct UiState {
-    pub show_log: bool,
-}
-
-impl UiState {
-    fn new() -> Self {
-        Self { show_log: false }
-    }
-}
+struct PluginResource(Vec<Plugin>);
 
 fn main() {
     log::set_logger(&*LOGGER).unwrap();
     log::set_max_level(log::LevelFilter::Debug);
     LOGGER.filter(log::LevelFilter::Debug);
 
-    log::warn!("Here");
-
     App::build()
         .add_plugins(DefaultPlugins)
         .add_plugin(EguiPlugin)
-        .add_resource(UiState::new())
+        .add_resource(ui_state::State::new())
         .add_resource(PluginResource(vec![]))
         .add_startup_system(setup.system())
         .add_system(top_panel.system())
@@ -84,7 +34,10 @@ fn main() {
 }
 
 fn setup(mut windows: ResMut<Windows>, mut egui_context: ResMut<EguiContext>) {
-    windows.get_primary_mut().unwrap().set_title(String::from("Open Creation"));
+    windows
+        .get_primary_mut()
+        .unwrap()
+        .set_title(String::from("Open Creation"));
 
     let ctx = &mut egui_context.ctx;
     let mut style = (*ctx.style()).clone();
@@ -92,7 +45,7 @@ fn setup(mut windows: ResMut<Windows>, mut egui_context: ResMut<EguiContext>) {
     ctx.set_style(style);
 }
 
-fn top_panel(mut egui_ctx: ResMut<EguiContext>, mut ui_state: ResMut<UiState>) {
+fn top_panel(mut egui_ctx: ResMut<EguiContext>, mut ui_state: ResMut<ui_state::State>) {
     let ctx = &mut egui_ctx.ctx;
 
     egui::TopPanel::top("top_panel").show(ctx, |ui| {
@@ -101,19 +54,13 @@ fn top_panel(mut egui_ctx: ResMut<EguiContext>, mut ui_state: ResMut<UiState>) {
         }
 
         if ui_state.show_log {
-            egui::Window::new("Log").default_size([400f32, 200f32]).show(ctx, |ui| {
-                egui::ScrollArea::auto_sized().id_source("scroll").show(ui, |ui| {
-                    ui.horizontal_wrapped(|ui| {
-                        let mut lines = LOGGER.lines.lock().unwrap().iter().fold(String::new(), |mut acc, elem| {
-                            acc.push_str(elem);
-                            acc.push_str("\n");
-                            acc
-                        });
+            let lines = &*LOGGER.lines.lock().unwrap();
+            
+            LogWindow::new(lines)
+                .scroll(LOGGER.updated())
+                .show(ctx, &mut ui_state.show_log);
 
-                        ui.add(egui::widgets::TextEdit::multiline(&mut lines).text_style(egui::TextStyle::Monospace));
-                    });
-                });
-            });
+            LOGGER.set_updated(false);
         }
     });
 }
@@ -122,13 +69,28 @@ fn left_panel(mut egui_ctx: ResMut<EguiContext>) {
     let ctx = &mut egui_ctx.ctx;
 
     egui::SidePanel::left("side_panel", 800f32).show(ctx, |ui| {
-        ui.label("Hello left panel");
+        ui.set_max_width(180.0);
+        ui.vertical_centered_justified(|ui| {
+            if ui.button("Add to log").clicked() {
+                log::debug!("Clicked!");
+            }
+        });
     });
 }
 
 fn load_plugin(mut plugins: ResMut<PluginResource>) {
     if plugins.0.is_empty() {
-        let plugin = read_plugin(File::open("/Users/adam/dev/OpenCreation/data/Skyrim.esm").unwrap()).expect("Help");
-        plugins.0.push(plugin);
+        let path = std::path::Path::new("/Users/adam/dev/OpenCreation/data/Skyrim.esm");
+        let file = File::open(&path);
+
+        if let Ok(file) = file {
+            if let Ok(plugin) = read_plugin(file) {
+                plugins.0.push(plugin);
+            } else {
+                log::error!("Error parsing file {}", path.to_string_lossy());
+            }
+        } else {
+            log::error!("Error opening file {}", path.to_string_lossy());
+        }
     }
 }

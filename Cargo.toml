@@ -1,0 +1,7 @@
+[workspace]
+
+members = [
+    "open-creation",
+    "open-creation-ui",
+    "open-creation-util",
+]

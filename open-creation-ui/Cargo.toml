@@ -1,0 +1,8 @@
+[package]
+name = "open_creation_ui"
+version = "0.1.0"
+authors = ["Adam-Gleave <adamg108@hotmail.co.uk>"]
+edition = "2018"
+
+[dependencies]
+egui = "0.10.0"
