@@ -24,26 +24,24 @@ impl<'a> LogWindow<'a> {
 impl<'a> View for LogWindow<'a> {
     fn ui(&mut self, ui: &mut egui::Ui) {
         ui.vertical_centered_justified(|ui| {
-            egui::ScrollArea::auto_sized()
-                .id_source("log_scroll")
-                .show(ui, |ui| {
-                    let mut lines = self.lines.iter().fold(String::new(), |mut acc, elem| {
-                        acc.push_str(elem);
-                        acc.push_str("\n");
-                        acc
-                    });
-                    lines.pop();
-        
-                    let text = egui::widgets::TextEdit::multiline(&mut lines)
-                        .text_style(egui::TextStyle::Monospace)
-                        .enabled(false);
-    
-                    let response = ui.add(text);
-                    
-                    if self.scroll {
-                        response.scroll_to_me(egui::Align::BOTTOM);
-                    }
+            egui::ScrollArea::auto_sized().id_source("log_scroll").show(ui, |ui| {
+                let mut lines = self.lines.iter().fold(String::new(), |mut acc, elem| {
+                    acc.push_str(elem);
+                    acc.push_str("\n");
+                    acc
                 });
+                lines.pop();
+
+                let text = egui::widgets::TextEdit::multiline(&mut lines)
+                    .text_style(egui::TextStyle::Monospace)
+                    .enabled(false);
+
+                let response = ui.add(text);
+
+                if self.scroll {
+                    response.scroll_to_me(egui::Align::BOTTOM);
+                }
+            });
         });
     }
 }

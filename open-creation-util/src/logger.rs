@@ -1,4 +1,10 @@
-use std::{collections::VecDeque, sync::{atomic::{AtomicBool, Ordering}, Mutex}};
+use std::{
+    collections::VecDeque,
+    sync::{
+        atomic::{AtomicBool, Ordering},
+        Mutex,
+    },
+};
 
 const LOG_CAPACITY: usize = 500;
 

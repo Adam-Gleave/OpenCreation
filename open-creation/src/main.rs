@@ -55,7 +55,7 @@ fn top_panel(mut egui_ctx: ResMut<EguiContext>, mut ui_state: ResMut<ui_state::S
 
         if ui_state.show_log {
             let lines = &*LOGGER.lines.lock().unwrap();
-            
+
             LogWindow::new(lines)
                 .scroll(LOGGER.updated())
                 .show(ctx, &mut ui_state.show_log);
