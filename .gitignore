@@ -13,4 +13,4 @@ Cargo.lock
 # Skyrim master file, copyrighted
 data/
 
-.DS_Store
+*.DS_Store
