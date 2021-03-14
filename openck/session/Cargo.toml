@@ -1,8 +1,0 @@
-[package]
-name = "session"
-version = "0.1.0"
-authors = ["Adam Gleave"]
-edition = "2018"
-
-[dependencies]
-tes-parser = { path = "../tes-parser" }

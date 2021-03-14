@@ -1,0 +1,15 @@
+[package]
+name = "open-creation"
+version = "0.1.0"
+authors = ["Adam-Gleave <adamg108@hotmail.co.uk>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+bevy = "0.4.0"
+bevy_egui = "0.3.0"
+egui = "0.10.0"
+lazy_static = "1.4.0"
+log = "0.4.14"
+tes-parse = { git = "https://github.com/Adam-Gleave/tes-parse", branch = "main" }
