@@ -1,5 +1,7 @@
+pub mod about_window;
 pub mod log_window;
 
+pub use about_window::AboutWindow;
 pub use log_window::LogWindow;
 
 pub trait View {

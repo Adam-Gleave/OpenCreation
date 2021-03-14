@@ -1,6 +1,6 @@
-use std::{borrow::Borrow, fs::File, sync::atomic::Ordering};
+use std::fs::File;
 
-use open_creation_ui::{LogWindow, Window};
+use open_creation_ui::{AboutWindow, LogWindow, Window};
 use open_creation_util::{log, Logger};
 
 use bevy::prelude::*;
@@ -29,6 +29,7 @@ fn main() {
         .add_startup_system(setup.system())
         .add_system(top_panel.system())
         .add_system(left_panel.system())
+        .add_system(windows.system())
         .add_system(load_plugin.system())
         .run();
 }
@@ -46,22 +47,29 @@ fn setup(mut windows: ResMut<Windows>, mut egui_context: ResMut<EguiContext>) {
 }
 
 fn top_panel(mut egui_ctx: ResMut<EguiContext>, mut ui_state: ResMut<ui_state::State>) {
+    const MENU_WIDTH: f32 = 150.0;
+
     let ctx = &mut egui_ctx.ctx;
 
+    let menu_button = |ui: &mut egui::Ui, name: &str| {
+        ui.set_width(MENU_WIDTH);
+        ui.button(name)
+    };
+
     egui::TopPanel::top("top_panel").show(ctx, |ui| {
-        if ui.selectable_label(ui_state.show_log, "Show Log").clicked() {
-            ui_state.show_log = !ui_state.show_log;
-        }
+        egui::menu::bar(ui, |ui| {
+            egui::menu::menu(ui, "View", |ui| {
+                if menu_button(ui, "Show log").clicked() {
+                    ui_state.show_log = !ui_state.show_log;
+                }
+            });
 
-        if ui_state.show_log {
-            let lines = &*LOGGER.lines.lock().unwrap();
-
-            LogWindow::new(lines)
-                .scroll(LOGGER.updated())
-                .show(ctx, &mut ui_state.show_log);
-
-            LOGGER.set_updated(false);
-        }
+            egui::menu::menu(ui, "Help", |ui| {
+                if menu_button(ui, "About").clicked() {
+                    ui_state.show_about = !ui_state.show_about;
+                }
+            });
+        });
     });
 }
 
@@ -76,6 +84,24 @@ fn left_panel(mut egui_ctx: ResMut<EguiContext>) {
             }
         });
     });
+}
+
+fn windows(mut egui_ctx: ResMut<EguiContext>, mut ui_state: ResMut<ui_state::State>) {
+    let ctx = &mut egui_ctx.ctx;
+
+    if ui_state.show_about {
+        AboutWindow::new().show(ctx, &mut ui_state.show_about);
+    }
+
+    if ui_state.show_log {
+        let lines = &*LOGGER.lines.lock().unwrap();
+
+        LogWindow::new(lines)
+            .scroll(LOGGER.updated())
+            .show(ctx, &mut ui_state.show_log);
+
+        LOGGER.set_updated(false);
+    }
 }
 
 fn load_plugin(mut plugins: ResMut<PluginResource>) {
