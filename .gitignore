@@ -11,4 +11,6 @@ Cargo.lock
 **/*.rs.bk
 
 # Skyrim master file, copyrighted
-/data/Skyrim.esm
+data/
+
+*.DS_Store

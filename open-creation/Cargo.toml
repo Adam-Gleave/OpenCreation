@@ -1,0 +1,14 @@
+[package]
+name = "open_creation"
+version = "0.1.0"
+authors = ["Adam-Gleave <adamg108@hotmail.co.uk>"]
+edition = "2018"
+
+[dependencies]
+open_creation_ui = { path = "../open-creation-ui" }
+open_creation_util = { path = "../open-creation-util" }
+
+bevy = "0.4.0"
+bevy_egui = "0.3.0"
+lazy_static = "1.4.0"
+tes-parse = { git = "https://github.com/Adam-Gleave/tes-parse", branch = "main" }

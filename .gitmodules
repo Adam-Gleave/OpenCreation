@@ -1,3 +1,0 @@
-[submodule "extern/imgui"]
-	path = extern/imgui
-	url = https://github.com/Adam-Gleave/imgui-docking-rs
