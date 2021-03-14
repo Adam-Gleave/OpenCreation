@@ -11,4 +11,4 @@ open_creation_util = { path = "../open-creation-util" }
 bevy = "0.4.0"
 bevy_egui = "0.3.0"
 lazy_static = "1.4.0"
-tes-parse = { git = "https://github.com/Adam-Gleave/tes-parse", branch = "main" }
+tes-parse = { git = "https://github.com/Adam-Gleave/tes-parse", rev = "41bae1a" }

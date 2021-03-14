@@ -1,4 +1,4 @@
-use std::fs::File;
+use std::{borrow::Borrow, fs::File};
 
 use open_creation_ui::{AboutWindow, LogWindow, Window};
 use open_creation_util::{log, Logger};
@@ -42,6 +42,11 @@ fn setup(mut windows: ResMut<Windows>, mut egui_context: ResMut<EguiContext>) {
 
     let ctx = &mut egui_context.ctx;
     let mut style = (*ctx.style()).clone();
+    style.visuals.window_corner_radius = 0.0;
+    style.visuals.widgets.active.corner_radius = 0.0;
+    style.visuals.widgets.hovered.corner_radius = 0.0;
+    style.visuals.widgets.noninteractive.corner_radius = 0.0;
+    style.visuals.widgets.inactive.corner_radius = 0.0;
     style.visuals.window_shadow.extrusion = 2.0;
     ctx.set_style(style);
 }
@@ -73,15 +78,112 @@ fn top_panel(mut egui_ctx: ResMut<EguiContext>, mut ui_state: ResMut<ui_state::S
     });
 }
 
-fn left_panel(mut egui_ctx: ResMut<EguiContext>) {
+fn left_panel(mut egui_ctx: ResMut<EguiContext>, plugins: Res<PluginResource>) {
     let ctx = &mut egui_ctx.ctx;
 
-    egui::SidePanel::left("side_panel", 800f32).show(ctx, |ui| {
-        ui.set_max_width(180.0);
-        ui.vertical_centered_justified(|ui| {
-            if ui.button("Add to log").clicked() {
-                log::debug!("Clicked!");
-            }
+    egui::SidePanel::left("side_panel", 360f32).show(ctx, |ui| {
+        egui::ScrollArea::auto_sized().show(ui, |ui| {
+            ui.separator();
+            ui.vertical_centered_justified(|ui| {
+                ui.label("Tree View");
+            });
+            ui.separator();
+
+            let plugins = &plugins.borrow().0;
+
+            let populate_by_code = |ui: &mut egui::Ui, code: [u8; 4]| {
+                for plugin in plugins {
+                    for editor_id in plugin.get_editor_ids_by_code(code) {
+                        ui.selectable_label(false, editor_id);
+                        ui.separator();
+                    }
+                }
+            };
+
+            let node = |ui: &mut egui::Ui, name: &str, code: [u8; 4]| {
+                ui.collapsing(name, |ui| {
+                    populate_by_code(ui, code);
+                });
+            };
+
+            ui.collapsing("Actors", |ui| {
+                populate_by_code(ui, [b'N', b'P', b'C', b'_']);
+            });
+
+            ui.collapsing("Audio", |ui| {
+                node(ui, "Acoustic Space",          [b'A', b'S', b'P', b'C']);
+                node(ui, "Music Track",             [b'M', b'U', b'S', b'T']);
+                node(ui, "Music Type",              [b'M', b'U', b'S', b'C']);
+                node(ui, "Reverb",                  [b'R', b'E', b'V', b'B']);
+                node(ui, "Sound Category",          [b'S', b'N', b'C', b'T']);
+                node(ui, "Sound Marker",            [b'S', b'O', b'U', b'N']);
+                node(ui, "Sound Output Model",      [b'S', b'O', b'P', b'M']);
+            });
+
+            ui.collapsing("Character", |ui| {
+                node(ui, "AI Package",              [b'P', b'A', b'C', b'K']);
+                node(ui, "Association Type",        [b'A', b'S', b'T', b'P']);
+                node(ui, "Class",                   [b'C', b'L', b'A', b'S']);
+                node(ui, "Equip Slot",              [b'E', b'Q', b'U', b'P']);
+                node(ui, "Faction",                 [b'F', b'A', b'C', b'T']);
+                node(ui, "Head Part",               [b'H', b'D', b'P', b'T']);
+                node(ui, "Movement Type",           [b'M', b'O', b'V', b'T']);
+                node(ui, "Quest",                   [b'Q', b'U', b'S', b'T']);
+                node(ui, "Race",                    [b'R', b'A', b'C', b'E']);
+                node(ui, "Relationship",            [b'R', b'E', b'L', b'A']);
+                node(ui, "Story Manager Event",     [b'S', b'M', b'E', b'N']);
+                node(ui, "Voice Type",              [b'V', b'T', b'Y', b'P']);
+            });
+
+            ui.collapsing("Items", |ui| {
+                node(ui, "Ammo",                    [b'A', b'M', b'M', b'O']);
+                node(ui, "Armor",                   [b'A', b'R', b'M', b'O']);
+                node(ui, "Book",                    [b'B', b'O', b'O', b'K']);
+                node(ui, "Constructible Object",    [b'C', b'O', b'B', b'J']);
+                node(ui, "Ingredient",              [b'I', b'N', b'G', b'R']);
+                node(ui, "Key",                     [b'K', b'E', b'Y', b'M']);
+                node(ui, "Leveled Item",            [b'L', b'V', b'L', b'I']);
+                node(ui, "Misc Item",               [b'M', b'I', b'S', b'C']);
+                node(ui, "Outfit",                  [b'O', b'T', b'F', b'T']);
+                node(ui, "Soul Gem",                [b'S', b'L', b'G', b'M']);
+                node(ui, "Weapon",                  [b'W', b'E', b'A', b'P']);
+                node(ui, "Quest",                   [b'Q', b'U', b'S', b'T']);
+            });
+
+            ui.collapsing("Magic", |ui| {});
+            
+            ui.collapsing("Miscellaneous", |ui| {
+                node(ui, "Animation Object",        [b'A', b'N', b'I', b'O']);
+                node(ui, "Art Object",              [b'A', b'R', b'T', b'O']);
+                node(ui, "Collision Layer",         [b'C', b'O', b'L', b'L']);
+                node(ui, "Color Form",              [b'C', b'L', b'F', b'M']);
+                node(ui, "Combat Style",            [b'C', b'S', b'T', b'Y']);
+                node(ui, "Form List",               [b'F', b'L', b'S', b'T']);
+                node(ui, "Global",                  [b'G', b'L', b'O', b'B']);
+                node(ui, "Idle Marker",             [b'I', b'D', b'L', b'M']);
+                node(ui, "Keyword",                 [b'K', b'Y', b'W', b'D']);
+                node(ui, "Land Texture",            [b'L', b'T', b'E', b'X']);
+                node(ui, "Load Screen",             [b'L', b'S', b'C', b'R']);
+                node(ui, "Material Object",         [b'M', b'A', b'T', b'O']);
+                node(ui, "Message",                 [b'M', b'E', b'S', b'G']);
+                node(ui, "Texture Set",             [b'T', b'X', b'S', b'T']);
+            });
+
+            ui.collapsing("Special Effects", |ui| {});
+            ui.collapsing("World Data", |ui| {});
+
+            ui.collapsing("World Objects", |ui| {
+                node(ui, "Activator",               [b'A', b'C', b'T', b'I']);
+                node(ui, "Container",               [b'C', b'O', b'N', b'T']);
+                node(ui, "Door",                    [b'D', b'O', b'O', b'R']);
+                node(ui, "Flora",                   [b'F', b'L', b'O', b'R']);
+                node(ui, "Furniture",               [b'F', b'U', b'R', b'N']);
+                node(ui, "Grass",                   [b'G', b'R', b'A', b'S']);
+                node(ui, "Light",                   [b'L', b'I', b'G', b'H']);
+                node(ui, "Movable Static",          [b'M', b'S', b'T', b'T']);
+                node(ui, "Static",                  [b'S', b'T', b'A', b'T']);
+                node(ui, "Tree",                    [b'T', b'R', b'E', b'E']);
+            });
         });
     });
 }
