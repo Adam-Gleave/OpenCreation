@@ -3,7 +3,7 @@ use std::{borrow::Borrow, fs::File};
 use open_creation_ui::{AboutWindow, GameSettingsWindow, LogWindow, Window};
 use open_creation_util::{log, Logger};
 
-use bevy::prelude::*;
+use bevy::{prelude::*, window};
 use bevy_egui::{egui, EguiContext, EguiPlugin};
 use lazy_static::lazy_static;
 use tes_parse::{read_plugin, Plugin};
@@ -27,6 +27,7 @@ fn main() {
         .add_resource(ui_state::State::new())
         .add_resource(PluginResource(vec![]))
         .add_startup_system(setup.system())
+        .add_system(should_close.system())
         .add_system(top_panel.system())
         .add_system(left_panel.system())
         .add_system(windows.system())
@@ -35,10 +36,9 @@ fn main() {
 }
 
 fn setup(mut windows: ResMut<Windows>, mut egui_context: ResMut<EguiContext>) {
-    windows
-        .get_primary_mut()
-        .unwrap()
-        .set_title(String::from("Open Creation"));
+    let mut window = windows.get_primary_mut().unwrap();
+    window.set_maximized(true);
+    window.set_title(String::from("Open Creation"));
 
     let ctx = &mut egui_context.ctx;
     let mut style = (*ctx.style()).clone();
@@ -49,6 +49,12 @@ fn setup(mut windows: ResMut<Windows>, mut egui_context: ResMut<EguiContext>) {
     style.visuals.widgets.inactive.corner_radius = 0.0;
     style.visuals.window_shadow.extrusion = 2.0;
     ctx.set_style(style);
+}
+
+fn should_close(mut exit_events: ResMut<Events<bevy::app::AppExit>>, ui_state: Res<ui_state::State>) {
+    if ui_state.should_close {
+        exit_events.send(bevy::app::AppExit);
+    }
 }
 
 fn top_panel(mut egui_ctx: ResMut<EguiContext>, mut ui_state: ResMut<ui_state::State>) {
@@ -65,7 +71,10 @@ fn top_panel(mut egui_ctx: ResMut<EguiContext>, mut ui_state: ResMut<ui_state::S
         egui::menu::bar(ui, |ui| {
             egui::menu::menu(ui, "File", |ui| {
                 menu_button(ui, "Data");
-                menu_button(ui, "Close");
+                
+                if menu_button(ui, "Close").clicked() {
+                    ui_state.should_close = true;
+                }
             });
 
             egui::menu::menu(ui, "View", |ui| {
