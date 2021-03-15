@@ -140,12 +140,16 @@ fn left_panel(mut egui_ctx: ResMut<EguiContext>, plugins: Res<PluginResource>) {
             let plugins = &plugins.borrow().0;
 
             let populate_by_code = |ui: &mut egui::Ui, code: [u8; 4]| {
-                for plugin in plugins {
-                    for editor_id in plugin.get_editor_ids_by_code(code) {
-                        ui.selectable_label(false, editor_id);
-                        ui.separator();
+                ui.with_layout(egui::Layout::top_down(egui::Align::TOP).with_cross_justify(true), |ui| {
+                    ui.separator();
+
+                    for plugin in plugins {
+                        for editor_id in plugin.get_editor_ids_by_code(code) {
+                            ui.selectable_label(false, editor_id);
+                            ui.separator();
+                        }
                     }
-                }
+                });
             };
 
             let node = |ui: &mut egui::Ui, name: &str, code: [u8; 4]| {
