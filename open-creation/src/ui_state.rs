@@ -1,6 +1,7 @@
 pub struct State {
     pub should_close: bool,
     pub show_about: bool,
+    pub show_data: bool,
     pub show_game_settings: bool,
     pub show_log: bool,
 }
@@ -10,6 +11,7 @@ impl State {
         Self {
             should_close: false,
             show_about: false,
+            show_data: false,
             show_game_settings: false,
             show_log: false,
         }

@@ -1,9 +1,9 @@
-use std::{borrow::Borrow, fs::File};
+use std::{borrow::Borrow, default::Default, fs::File};
 
-use open_creation_ui::{AboutWindow, GameSettingsWindow, LogWindow, Window};
+use open_creation_ui::{AboutWindow, DataWindow, GameSettingsWindow, LogWindow, Window};
 use open_creation_util::{log, Logger};
 
-use bevy::{prelude::*, window};
+use bevy::{prelude::*, render::camera::PerspectiveProjection, window};
 use bevy_egui::{egui, EguiContext, EguiPlugin};
 use lazy_static::lazy_static;
 use tes_parse::{read_plugin, Plugin};
@@ -26,6 +26,7 @@ fn main() {
         .add_plugin(EguiPlugin)
         .add_resource(ui_state::State::new())
         .add_resource(PluginResource(vec![]))
+        .add_resource(ClearColor(Color::rgb(0.65, 0.65, 0.65)))
         .add_startup_system(setup.system())
         .add_system(should_close.system())
         .add_system(top_panel.system())
@@ -35,20 +36,45 @@ fn main() {
         .run();
 }
 
-fn setup(mut windows: ResMut<Windows>, mut egui_context: ResMut<EguiContext>) {
+fn setup(
+    commands: &mut Commands,
+    mut windows: ResMut<Windows>,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<StandardMaterial>>,
+    mut egui_context: ResMut<EguiContext>,
+) {
     let mut window = windows.get_primary_mut().unwrap();
     window.set_maximized(true);
     window.set_title(String::from("Open Creation"));
 
     let ctx = &mut egui_context.ctx;
     let mut style = (*ctx.style()).clone();
+    style.visuals = egui::style::Visuals::light();
     style.visuals.window_corner_radius = 0.0;
     style.visuals.widgets.active.corner_radius = 0.0;
     style.visuals.widgets.hovered.corner_radius = 0.0;
     style.visuals.widgets.noninteractive.corner_radius = 0.0;
     style.visuals.widgets.inactive.corner_radius = 0.0;
-    style.visuals.window_shadow.extrusion = 2.0;
+    style.visuals.window_shadow.extrusion = 10.0;
     ctx.set_style(style);
+
+    commands.spawn(bevy::prelude::PbrBundle {
+        mesh: meshes.add(Mesh::from(shape::Cube { size: 1.0 })),
+        material: materials.add(Color::YELLOW_GREEN.into()),
+        ..Default::default()
+    })
+    .spawn(LightBundle {
+        transform: Transform::from_translation(Vec3::new(4.0, 8.0, 4.0)),
+        ..Default::default()
+    })
+    .spawn(Camera3dBundle {
+        transform: Transform::from_translation(Vec3::new(-2.0, 2.5, 5.0)).looking_at(Vec3::default(), Vec3::unit_y()),
+        perspective_projection: PerspectiveProjection {
+            near: 0.01,
+            ..Default::default()
+        },
+        ..Default::default()
+    });
 }
 
 fn should_close(mut exit_events: ResMut<Events<bevy::app::AppExit>>, ui_state: Res<ui_state::State>) {
@@ -70,7 +96,9 @@ fn top_panel(mut egui_ctx: ResMut<EguiContext>, mut ui_state: ResMut<ui_state::S
     egui::TopPanel::top("top_panel").show(ctx, |ui| {
         egui::menu::bar(ui, |ui| {
             egui::menu::menu(ui, "File", |ui| {
-                menu_button(ui, "Data");
+                if menu_button(ui, "Data").clicked() {
+                    ui_state.show_data = !ui_state.show_data;
+                };
                 
                 if menu_button(ui, "Close").clicked() {
                     ui_state.should_close = true;
@@ -210,6 +238,17 @@ fn left_panel(mut egui_ctx: ResMut<EguiContext>, plugins: Res<PluginResource>) {
 
 fn windows(mut egui_ctx: ResMut<EguiContext>, mut ui_state: ResMut<ui_state::State>, plugins: Res<PluginResource>) {
     let ctx = &mut egui_ctx.ctx;
+
+    if ui_state.show_data {
+        let mut data_window = DataWindow::new();
+        let files = vec!["Skyrim.esm", "Dawnguard.esm", "Dragonborn.esm", "Update.esm"];
+
+        for file in files {
+            data_window.add_file(file.to_owned());
+        }
+
+        data_window.show(ctx, &mut ui_state.show_data);
+    }
 
     if ui_state.show_about {
         AboutWindow::new().show(ctx, &mut ui_state.show_about);

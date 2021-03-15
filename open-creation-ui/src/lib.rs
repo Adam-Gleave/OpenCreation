@@ -1,8 +1,10 @@
 pub mod about_window;
+pub mod data_window;
 pub mod log_window;
 pub mod game_settings_window;
 
 pub use about_window::AboutWindow;
+pub use data_window::DataWindow;
 pub use game_settings_window::GameSettingsWindow;
 pub use log_window::LogWindow;
 
