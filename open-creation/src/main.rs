@@ -4,7 +4,7 @@ use open_creation_ui::{AboutWindow, DataWindow, GameSettingsWindow, LogWindow, W
 use open_creation_util::{log, Logger};
 
 use bevy::{prelude::*, render::camera::PerspectiveProjection, window};
-use bevy_egui::{egui, EguiContext, EguiPlugin};
+use bevy_egui::{egui, EguiContext, EguiPlugin, EguiSystem};
 use lazy_static::lazy_static;
 use tes_parse::{read_plugin, Plugin};
 
@@ -24,20 +24,20 @@ fn main() {
     App::build()
         .add_plugins(DefaultPlugins)
         .add_plugin(EguiPlugin)
-        .add_resource(ui_state::State::new())
-        .add_resource(PluginResource(vec![]))
-        .add_resource(ClearColor(Color::rgb(0.65, 0.65, 0.65)))
-        .add_startup_system(setup.system())
+        .insert_resource(ui_state::State::new())
+        .insert_resource(PluginResource(vec![]))
+        .insert_resource(ClearColor(Color::rgb(0.65, 0.65, 0.65)))
+        .add_system(setup.system())
+        .add_system(windows.system())
         .add_system(should_close.system())
         .add_system(top_panel.system())
         .add_system(left_panel.system())
-        .add_system(windows.system())
         .add_system(load_plugin.system())
         .run();
 }
 
 fn setup(
-    commands: &mut Commands,
+    mut commands: Commands,
     mut windows: ResMut<Windows>,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
@@ -47,7 +47,7 @@ fn setup(
     window.set_maximized(true);
     window.set_title(String::from("Open Creation"));
 
-    let ctx = &mut egui_context.ctx;
+    let ctx = &mut egui_context.ctx();
     let mut style = (*ctx.style()).clone();
     style.visuals = egui::style::Visuals::light();
     style.visuals.window_corner_radius = 0.0;
@@ -58,26 +58,28 @@ fn setup(
     style.visuals.window_shadow.extrusion = 10.0;
     ctx.set_style(style);
 
-    commands.spawn(bevy::prelude::PbrBundle {
-        mesh: meshes.add(Mesh::from(shape::Cube { size: 1.0 })),
-        material: materials.add(Color::YELLOW_GREEN.into()),
-        ..Default::default()
-    })
-    .spawn(LightBundle {
-        transform: Transform::from_translation(Vec3::new(4.0, 8.0, 4.0)),
-        ..Default::default()
-    })
-    .spawn(Camera3dBundle {
-        transform: Transform::from_translation(Vec3::new(-2.0, 2.5, 5.0)).looking_at(Vec3::default(), Vec3::unit_y()),
-        perspective_projection: PerspectiveProjection {
-            near: 0.01,
+    commands
+        .spawn()
+        .insert(bevy::prelude::PbrBundle {
+            mesh: meshes.add(Mesh::from(shape::Cube { size: 1.0 })),
+            material: materials.add(Color::YELLOW_GREEN.into()),
             ..Default::default()
-        },
-        ..Default::default()
-    });
+        })
+        .insert(LightBundle {
+            transform: Transform::from_translation(Vec3::new(4.0, 8.0, 4.0)),
+            ..Default::default()
+        })
+        .insert(PerspectiveCameraBundle {
+            transform: Transform::from_translation(Vec3::new(-2.0, 2.5, 5.0)).looking_at(Vec3::default(), Vec3::unit_y()),
+            perspective_projection: PerspectiveProjection {
+                near: 0.01,
+                ..Default::default()
+            },
+            ..Default::default()
+        });
 }
 
-fn should_close(mut exit_events: ResMut<Events<bevy::app::AppExit>>, ui_state: Res<ui_state::State>) {
+fn should_close(mut exit_events: EventWriter<bevy::app::AppExit>, ui_state: Res<ui_state::State>) {
     if ui_state.should_close {
         exit_events.send(bevy::app::AppExit);
     }
@@ -86,7 +88,7 @@ fn should_close(mut exit_events: ResMut<Events<bevy::app::AppExit>>, ui_state: R
 fn top_panel(mut egui_ctx: ResMut<EguiContext>, mut ui_state: ResMut<ui_state::State>) {
     const MENU_WIDTH: f32 = 150.0;
 
-    let ctx = &mut egui_ctx.ctx;
+    let ctx = &mut egui_ctx.ctx();
 
     let menu_button = |ui: &mut egui::Ui, name: &str| {
         ui.set_width(MENU_WIDTH);
@@ -127,7 +129,7 @@ fn top_panel(mut egui_ctx: ResMut<EguiContext>, mut ui_state: ResMut<ui_state::S
 }
 
 fn left_panel(mut egui_ctx: ResMut<EguiContext>, plugins: Res<PluginResource>) {
-    let ctx = &mut egui_ctx.ctx;
+    let ctx = &mut egui_ctx.ctx();
 
     egui::SidePanel::left("side_panel", 360f32).show(ctx, |ui| {
         egui::ScrollArea::auto_sized().show(ui, |ui| {
@@ -241,7 +243,7 @@ fn left_panel(mut egui_ctx: ResMut<EguiContext>, plugins: Res<PluginResource>) {
 }
 
 fn windows(mut egui_ctx: ResMut<EguiContext>, mut ui_state: ResMut<ui_state::State>, plugins: Res<PluginResource>) {
-    let ctx = &mut egui_ctx.ctx;
+    let ctx = &mut egui_ctx.ctx();
 
     if ui_state.show_data {
         let mut data_window = DataWindow::new();
